@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin â€” ROOTED</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ivory:#F7F4EC; --sand:#EDE7D8; --forest:#1E3A2B; --forest-deep:#14261C; --ink:#0E0D0B;
+  --gold:#B68D4C; --line-soft:rgba(14,13,11,0.10); --danger:#a3402c; --success:#3d7a4a;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{background:var(--ivory); color:var(--ink); font-family:'Inter', sans-serif; -webkit-font-smoothing:antialiased;}
+.serif{font-family:'Fraunces', serif;}
+button{font-family:inherit; cursor:pointer; border:none; background:none;}
+input, textarea, select{font-family:inherit;}
+a{color:inherit; text-decoration:none;}
+
+/* ===== Login ===== */
+.login-screen{min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; background:radial-gradient(ellipse at top, #1E3A2B 0%, #0E0D0B 65%);}
+.login-card{background:var(--ivory); border:1px solid var(--gold); max-width:400px; width:100%; padding:44px 38px;}
+.login-logo{font-family:'Fraunces', serif; font-size:28px; font-weight:600; text-align:center; margin-bottom:6px;}
+.login-logo span{color:var(--gold); font-style:italic; font-weight:500;}
+.login-sub{text-align:center; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--gold); font-weight:600; margin-bottom:32px;}
+.login-field{margin-bottom:18px;}
+.login-field label{display:block; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; font-weight:600; color:var(--gold); margin-bottom:8px;}
+.login-field input{width:100%; border:1px solid var(--line-soft); background:#fff; padding:13px 14px; font-size:14px; transition:border-color .2s;}
+.login-field input:focus{outline:none; border-color:var(--gold);}
+.login-btn{width:100%; background:var(--forest); color:var(--ivory); padding:15px; font-size:12px; letter-spacing:0.14em; text-transform:uppercase; font-weight:600; margin-top:8px; transition:background .2s;}
+.login-btn:hover{background:var(--forest-deep);}
+.login-error{background:rgba(163,64,44,0.08); border:1px solid rgba(163,64,44,0.3); color:var(--danger); font-size:12.5px; padding:10px 14px; margin-bottom:18px; display:none;}
+.login-error.show{display:block;}
+.login-hint{text-align:center; font-size:11px; color:#8a877d; margin-top:20px; line-height:1.6;}
+
+/* ===== Dashboard Shell ===== */
+.dash{display:none; min-height:100vh; grid-template-columns:240px 1fr;}
+.dash.active{display:grid;}
+.sidebar{background:var(--forest); color:var(--ivory); padding:28px 0; display:flex; flex-direction:column; position:sticky; top:0; height:100vh;}
+.sidebar-logo{padding:0 26px 28px; border-bottom:1px solid rgba(182,141,76,0.25); margin-bottom:20px;}
+.sidebar-logo .name{font-family:'Fraunces', serif; font-size:22px; font-weight:600;}
+.sidebar-logo .name span{color:var(--gold); font-style:italic; font-weight:500;}
+.sidebar-logo .role{font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:#c9c5bb; margin-top:4px;}
+.nav-item{display:flex; align-items:center; gap:12px; padding:13px 26px; font-size:13px; color:#dcd7c9; border-left:2px solid transparent; transition:all .2s; cursor:pointer;}
+.nav-item:hover{background:rgba(182,141,76,0.08); color:var(--ivory);}
+.nav-item.active{border-left-color:var(--gold); background:rgba(182,141,76,0.14); color:var(--gold); font-weight:600;}
+.sidebar-foot{margin-top:auto; padding:20px 26px 0; border-top:1px solid rgba(182,141,76,0.25);}
+.logout-btn{font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:#c9c5bb; font-weight:600;}
+.logout-btn:hover{color:var(--gold);}
+.main{padding:36px 44px; overflow-x:hidden;}
+.sidebar-overlay{position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:70; opacity:0; pointer-events:none; transition:opacity .3s;}
+.sidebar-overlay.open{opacity:1; pointer-events:all;}
+.main-head{display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:32px; flex-wrap:wrap; gap:16px;}
+.main-title{font-family:'Fraunces', serif; font-size:32px; font-weight:600;}
+.main-sub{font-size:13px; color:#6b6860; margin-top:6px;}
+
+/* ===== Stats ===== */
+.stats-row{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line-soft); border:1px solid var(--line-soft); margin-bottom:36px;}
+.stat-card{background:var(--ivory); padding:22px 24px;}
+.stat-label{font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:10px;}
+.stat-value{font-family:'Fraunces', serif; font-size:32px; font-weight:600;}
+
+/* ===== Panels ===== */
+.panel{display:none;}
+.panel.active{display:block;}
+.panel-toolbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; gap:16px; flex-wrap:wrap;}
+.btn-gold{background:var(--forest); color:var(--ivory); padding:12px 22px; font-size:11.5px; letter-spacing:0.1em; text-transform:uppercase; font-weight:600; transition:background .2s; display:flex; align-items:center; gap:8px;}
+.btn-gold:hover{background:var(--forest-deep);}
+.btn-outline{border:1px solid var(--line-soft); padding:11px 20px; font-size:11.5px; letter-spacing:0.1em; text-transform:uppercase; font-weight:600; transition:all .2s;}
+.btn-outline:hover{border-color:var(--forest);}
+.search-input{border:1px solid var(--line-soft); background:#fff; padding:11px 16px; font-size:13px; min-width:240px;}
+.search-input:focus{outline:none; border-color:var(--gold);}
+
+/* ===== Table ===== */
+.table-wrap{background:var(--ivory); border:1px solid var(--line-soft); overflow-x:auto;}
+table{width:100%; border-collapse:collapse; min-width:640px;}
+thead{background:var(--forest); color:var(--gold);}
+th{text-align:left; padding:13px 18px; font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; font-weight:700; white-space:nowrap;}
+td{padding:15px 18px; font-size:13px; border-bottom:1px solid var(--line-soft); vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:var(--sand);}
+.prod-thumb{width:44px; height:52px; background:var(--forest); flex-shrink:0; overflow:hidden; display:flex; align-items:center; justify-content:center;}
+.prod-thumb img{width:100%; height:100%; object-fit:cover;}
+.prod-cell{display:flex; align-items:center; gap:12px;}
+.prod-name{font-family:'Fraunces', serif; font-size:16px; font-weight:600;}
+.prod-cat{font-size:11px; color:#8a877d; text-transform:capitalize;}
+.badge{display:inline-block; font-size:10px; letter-spacing:0.06em; text-transform:uppercase; font-weight:700; padding:4px 10px; border-radius:2px;}
+.badge.bestseller{background:var(--gold); color:var(--ink);}
+.badge.new{background:var(--forest); color:var(--ivory);}
+.badge.none{color:#a09c92;}
+.row-actions{display:flex; gap:8px;}
+.icon-btn{width:30px; height:30px; border:1px solid var(--line-soft); display:flex; align-items:center; justify-content:center; transition:all .2s;}
+.icon-btn:hover{border-color:var(--gold); background:var(--sand);}
+.icon-btn.danger:hover{border-color:var(--danger); background:rgba(163,64,44,0.06);}
+.empty-state{text-align:center; padding:60px 20px; color:#8a877d;}
+.empty-state p{font-family:'Fraunces', serif; font-style:italic; font-size:20px; color:var(--gold); margin-bottom:8px;}
+
+.status-pill{display:inline-flex; align-items:center; gap:6px; font-size:10.5px; letter-spacing:0.06em; text-transform:uppercase; font-weight:700; padding:5px 12px; border:1px solid;}
+.status-pill.pending{color:#8a6d2f; border-color:#8a6d2f; background:rgba(182,141,76,0.08);}
+.status-pill.confirmed{color:#3d7a4a; border-color:#3d7a4a; background:rgba(61,122,74,0.08);}
+.status-pill.delivered{color:#2d5f8a; border-color:#2d5f8a; background:rgba(45,95,138,0.08);}
+.status-pill.cancelled{color:#a3402c; border-color:#a3402c; background:rgba(163,64,44,0.08);}
+.status-select{border:1px solid var(--line-soft); padding:6px 8px; font-size:11.5px; background:#fff;}
+
+/* ===== Modal ===== */
+.modal-overlay{position:fixed; inset:0; background:rgba(14,13,11,0.65); z-index:100; opacity:0; pointer-events:none; transition:opacity .3s; display:flex; align-items:center; justify-content:center; padding:24px; overflow-y:auto;}
+.modal-overlay.open{opacity:1; pointer-events:all;}
+.modal{background:var(--ivory); max-width:560px; width:100%; margin:auto; border:1px solid var(--gold); transform:translateY(16px); transition:transform .3s ease; max-height:88vh; display:flex; flex-direction:column;}
+.modal-overlay.open .modal{transform:translateY(0);}
+.modal-head{padding:26px 32px 18px; border-bottom:1px solid var(--line-soft); display:flex; justify-content:space-between; align-items:center;}
+.modal-head h3{font-family:'Fraunces', serif; font-size:24px; font-weight:600;}
+.modal-close{font-size:20px; color:var(--gold);}
+.modal-body{padding:24px 32px; overflow-y:auto;}
+.form-row{margin-bottom:16px;}
+.form-row label{display:block; font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; font-weight:600; color:var(--gold); margin-bottom:7px;}
+.form-row input, .form-row select, .form-row textarea{width:100%; border:1px solid var(--line-soft); background:#fff; padding:11px 13px; font-size:13.5px;}
+.form-row input:focus, .form-row select:focus, .form-row textarea:focus{outline:none; border-color:var(--gold);}
+.form-row textarea{min-height:70px; resize:vertical;}
+.form-grid-2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+.form-hint{font-size:11px; color:#8a877d; margin-top:6px;}
+.checkbox-row{display:flex; align-items:center; gap:8px;}
+.checkbox-row input{width:auto;}
+
+/* ===== Photo Upload ===== */
+.photo-upload-box{border:1px solid var(--line-soft); padding:16px; background:#fff;}
+.photo-preview{width:100%; aspect-ratio:4/5; max-width:180px; background:var(--forest); display:flex; align-items:center; justify-content:center; margin-bottom:14px; overflow:hidden; position:relative;}
+.photo-preview span{color:#8a877d; font-size:11.5px; text-align:center; padding:12px;}
+.photo-preview img{width:100%; height:100%; object-fit:cover;}
+.photo-upload-actions{display:flex; gap:10px; flex-wrap:wrap;}
+.photo-choose-btn{display:inline-block; cursor:pointer; text-align:center;}
+.photo-remove-btn{border:1px solid var(--danger); color:var(--danger); padding:11px 20px; font-size:11.5px; letter-spacing:0.1em; text-transform:uppercase; font-weight:600; transition:all .2s;}
+.photo-remove-btn:hover{background:rgba(163,64,44,0.08);}
+.photo-uploading-overlay{position:absolute; inset:0; background:rgba(14,13,11,0.75); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; color:var(--gold); font-size:11.5px; letter-spacing:0.08em; text-transform:uppercase; font-weight:600;}
+.photo-spinner{width:20px; height:20px; border:2px solid rgba(182,141,76,0.3); border-top-color:var(--gold); border-radius:50%; animation:photo-spin 0.7s linear infinite;}
+@keyframes photo-spin{to{transform:rotate(360deg);}}
+.photo-upload-status{font-size:11.5px; margin-top:10px; min-height:14px;}
+.photo-upload-status.success{color:var(--success);}
+.photo-upload-status.error{color:var(--danger);}
+.modal-foot{padding:20px 32px 26px; border-top:1px solid var(--line-soft); display:flex; gap:12px;}
+.modal-foot button{flex:1;}
+
+/* ===== Toast ===== */
+.toast{position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--forest); color:var(--ivory); padding:14px 24px; font-size:12.5px; z-index:120; opacity:0; pointer-events:none; transition:all .3s; border:1px solid var(--gold);}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+/* ===== Confirm dialog ===== */
+.confirm-overlay{position:fixed; inset:0; background:rgba(14,13,11,0.65); z-index:110; opacity:0; pointer-events:none; transition:opacity .25s; display:flex; align-items:center; justify-content:center; padding:24px;}
+.confirm-overlay.open{opacity:1; pointer-events:all;}
+.confirm-box{background:var(--ivory); border:1px solid var(--danger); max-width:380px; padding:28px; text-align:center;}
+.confirm-box p{font-size:14px; margin-bottom:20px; line-height:1.6;}
+.confirm-actions{display:flex; gap:10px;}
+.confirm-actions button{flex:1; padding:12px; font-size:11.5px; letter-spacing:0.08em; text-transform:uppercase; font-weight:600;}
+.confirm-cancel{border:1px solid var(--line-soft);}
+.confirm-delete{background:var(--danger); color:#fff;}
+
+/* ===== Order Detail ===== */
+.order-detail-body{font-size:13.5px;}
+.od-section{margin-bottom:20px;}
+.od-label{font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:10px;}
+.od-row{display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed var(--line-soft);}
+.od-row:last-child{border-bottom:none;}
+.od-row .k{color:#6b6860;}
+.od-row .v{font-weight:600; text-align:right;}
+.od-map-wrap{margin-top:12px; border:1px solid var(--line-soft); overflow:hidden; height:180px;}
+.od-map{width:100%; height:100%; border:none;}
+.od-map-link{display:block; text-align:center; font-size:11.5px; letter-spacing:0.08em; text-transform:uppercase; font-weight:600; color:var(--forest); margin-top:8px;}
+.od-map-link:hover{color:var(--gold);}
+
+/* ===== Newsletter list ===== */
+.subscriber-list{max-height:400px; overflow-y:auto; background:var(--ivory); border:1px solid var(--line-soft); padding:8px 0;}
+.subscriber-row{padding:10px 18px; font-size:13px; border-bottom:1px solid var(--line-soft);}
+.subscriber-row:last-child{border-bottom:none;}
+
+.sale-live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--success);margin-right:6px;}
+/* ===== Settings ===== */
+.settings-card{background:var(--ivory); border:1px solid var(--line-soft); padding:28px 30px; max-width:760px;}
+.settings-image-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:22px;}
+@media(max-width:700px){.settings-image-grid{grid-template-columns:1fr;}}
+.settings-card h3{font-family:'Fraunces', serif; font-size:19px; font-weight:600; margin-bottom:8px;}
+.settings-hint{font-size:12.5px; color:#8a877d; line-height:1.6; margin-bottom:18px;}
+
+/* ===== Responsive ===== */
+@media (max-width: 900px){
+  .dash{grid-template-columns:1fr;}
+  .sidebar{position:fixed; left:0; top:0; height:100vh; width:240px; z-index:80; transform:translateX(-100%); transition:transform .3s;}
+  .sidebar.open{transform:translateX(0);}
+  .main{padding:20px;}
+  .mobile-topbar{display:flex; align-items:center; justify-content:space-between; background:var(--forest); color:var(--ivory); padding:16px 20px; position:sticky; top:0; z-index:60;}
+  .mobile-topbar .name{font-family:'Fraunces',serif; font-size:19px;}
+  .mobile-topbar .name span{color:var(--gold); font-style:italic;}
+  .menu-btn{color:var(--gold); font-size:13px; letter-spacing:0.08em; text-transform:uppercase; border:1px solid var(--gold); padding:7px 12px; font-weight:600;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .form-grid-2{grid-template-columns:1fr;}
+}
+@media (min-width: 901px){ .mobile-topbar, .menu-btn{display:none;} }
+@media (max-width: 500px){ .stats-row{grid-template-columns:1fr;} .main-title{font-size:26px;} }
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN SCREEN ===== -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">ROOTED <span>Admin</span></div>
+    <div class="login-sub">Sign in to manage your store</div>
+    <div class="login-error" id="loginError">Incorrect username or password. Please try again.</div>
+    <form id="loginForm">
+      <div class="login-field">
+        <label for="loginUser">Username</label>
+        <input type="text" id="loginUser" autocomplete="username" placeholder="admin">
+      </div>
+      <div class="login-field">
+        <label for="loginPass">Password</label>
+        <input type="password" id="loginPass" autocomplete="current-password" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢">
+      </div>
+      <button type="submit" class="login-btn">Sign In</button>
+    </form>
+    <p class="login-hint">Default login â€” username: <strong>admin</strong>, password: <strong>rooted2026</strong><br>Change these in the script section of this file.</p>
+  </div>
+</div>
+
+<!-- ===== DASHBOARD ===== -->
+<div class="dash" id="dashScreen">
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="name">ROOTED <span>Admin</span></div>
+      <div class="role">Store Management</div>
+    </div>
+    <div class="nav-item active" data-panel="overview">Overview</div>
+    <div class="nav-item" data-panel="orders">Orders</div>
+    <div class="nav-item" data-panel="products">Products</div>
+    <div class="nav-item" data-panel="coupons">Coupons</div>
+    <div class="nav-item" data-panel="newsletter">Newsletter</div>
+    <div class="nav-item" data-panel="sale">Sale</div>
+    <div class="nav-item" data-panel="settings">Settings</div>
+    <div class="sidebar-foot">
+      <button class="logout-btn" id="logoutBtn">Log Out</button>
+    </div>
+  </aside>
+
+  <div>
+    <div class="mobile-topbar">
+      <div class="name">ROOTED <span>Admin</span></div>
+      <button class="menu-btn" id="menuBtn">Menu</button>
+    </div>
+
+    <div class="main">
+
+      <!-- OVERVIEW -->
+      <div class="panel active" id="panel-overview">
+        <div class="main-head">
+          <div><h1 class="main-title">Overview</h1><p class="main-sub">A snapshot of your store's activity</p></div>
+        </div>
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-label">Total Orders</div><div class="stat-value" id="statOrders">0</div></div>
+          <div class="stat-card"><div class="stat-label">Pending Orders</div><div class="stat-value" id="statPending">0</div></div>
+          <div class="stat-card"><div class="stat-label">Revenue (COD)</div><div class="stat-value" id="statRevenue">Rs 0</div></div>
+          <div class="stat-card"><div class="stat-label">Products Listed</div><div class="stat-value" id="statProducts">0</div></div>
+        </div>
+        <div class="panel-toolbar"><h3 class="serif" style="font-size:20px; font-weight:600;">Recent Orders</h3></div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th></tr></thead><tbody id="recentOrdersBody"></tbody></table>
+        </div>
+      </div>
+
+      <!-- ORDERS -->
+      <div class="panel" id="panel-orders">
+        <div class="main-head"><div><h1 class="main-title">Orders</h1><p class="main-sub">All customer orders placed through your website</p></div></div>
+        <div class="panel-toolbar">
+          <input type="text" class="search-input" id="orderSearch" placeholder="Search by name, phone, or order ID...">
+          <button class="btn-outline" id="refreshOrdersBtn">Refresh</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Order ID</th><th>Date</th><th>Customer</th><th>Phone</th><th>City</th><th>Items</th><th>Coupon</th><th>Total</th><th>Status</th><th></th></tr></thead>
+            <tbody id="ordersBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PRODUCTS -->
+      <div class="panel" id="panel-products">
+        <div class="main-head"><div><h1 class="main-title">Products</h1><p class="main-sub">Manage what appears in your shop</p></div></div>
+        <div class="panel-toolbar">
+          <input type="text" class="search-input" id="productSearch" placeholder="Search products...">
+          <button class="btn-gold" id="addProductBtn">+ Add Product</button>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Tag</th><th></th></tr></thead><tbody id="productsBody"></tbody></table>
+        </div>
+      </div>
+
+      <!-- COUPONS -->
+      <div class="panel" id="panel-coupons">
+        <div class="main-head"><div><h1 class="main-title">Coupons</h1><p class="main-sub">Manage discount codes available at checkout</p></div></div>
+        <div class="panel-toolbar">
+          <input type="text" class="search-input" id="couponSearch" placeholder="Search coupons...">
+          <button class="btn-gold" id="addCouponBtn">+ Add Coupon</button>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Code</th><th>Type</th><th>Value</th><th>Min Order</th><th>Status</th><th></th></tr></thead><tbody id="couponsBody"></tbody></table>
+        </div>
+      </div>
+
+      <!-- NEWSLETTER -->
+      <div class="panel" id="panel-newsletter">
+        <div class="main-head"><div><h1 class="main-title">Newsletter</h1><p class="main-sub"><span id="subscriberCount">0</span> subscribers collected from your website</p></div></div>
+        <div class="panel-toolbar">
+          <button class="btn-outline" id="copyEmailsBtn">Copy All Emails</button>
+        </div>
+        <div class="subscriber-list" id="subscriberList"></div>
+      </div>
+
+      <!-- SALE PANEL -->
+      <div class="panel" id="panel-sale">
+        <div class="main-head"><div><h1 class="main-title">Sale</h1><p class="main-sub">Control a store-wide sale that appears live on your website</p></div></div>
+        <div class="settings-card" style="max-width:760px;">
+          <h3>Live Store Sale</h3>
+          <p class="settings-hint">Turn the sale on and set any percentage from 0% to 100%. Product base prices stay unchanged; customers see the discounted price automatically.</p>
+          <div class="form-row checkbox-row" style="margin:22px 0;">
+            <input type="checkbox" id="saleActive">
+            <label for="saleActive" style="margin:0; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;">Sale Active</label>
+          </div>
+          <div class="form-row" style="max-width:320px;">
+            <label for="salePercentage">Sale Percentage (%)</label>
+            <input type="number" id="salePercentage" min="0" max="100" step="1" placeholder="25">
+            <p class="form-hint">Example: 25 means customers get 25% off every product.</p>
+          </div>
+          <div style="padding:16px; background:var(--sand); border:1px solid var(--line-soft); margin:20px 0; font-size:13px; line-height:1.6;">
+            <strong>Preview:</strong> Rs 2,999 â†’ <span id="salePreviewPrice">Rs 2,999</span>
+          </div>
+          <button type="button" class="btn-gold" id="saveSaleBtn">Save Sale Settings</button>
+          <p class="photo-upload-status" id="saleStatus"></p>
+        </div>
+      </div>
+
+      <!-- SETTINGS PANEL -->
+      <div class="panel" id="panel-settings">
+        <div class="main-head"><div><h1 class="main-title">Settings</h1><p class="main-sub">Site-wide images and details</p></div></div>
+        <div class="settings-card">
+          <h3>Hero Image</h3>
+          <p class="settings-hint">Upload your own bottle/product photo to replace the default illustration on your homepage. Uploads the same way as product photos â€” visible to every customer, on any device.</p>
+          <div class="photo-upload-box" style="max-width:340px;">
+            <div class="photo-preview" id="heroPhotoPreview" style="aspect-ratio:4/5; max-width:220px;">
+              <span id="heroPhotoPlaceholder">Using default illustration</span>
+              <img id="heroPhotoImg" style="display:none;" alt="Hero preview">
+              <div class="photo-uploading-overlay" id="heroUploadingOverlay" style="display:none;">
+                <div class="photo-spinner"></div><span>Uploading...</span>
+              </div>
+            </div>
+            <div class="photo-upload-actions">
+              <label for="heroImgFile" class="btn-outline photo-choose-btn" id="heroChooseLabel">Choose Photo</label>
+              <input type="file" id="heroImgFile" accept="image/*" style="display:none;">
+              <button type="button" class="photo-remove-btn" id="heroRemoveBtn" style="display:none;">Remove</button>
+            </div>
+            <p class="photo-upload-status" id="heroUploadStatus"></p>
+          </div>
+
+          <div class="settings-image-grid">
+            <div>
+              <h3 style="margin-top:0;">Before Image</h3>
+              <p class="settings-hint">Upload the image shown on the left side of the Before / After slider on the homepage.</p>
+              <div class="photo-upload-box">
+                <div class="photo-preview" style="aspect-ratio:4/5;">
+                  <span id="beforePhotoPlaceholder">Using default illustration</span>
+                  <img id="beforePhotoImg" style="display:none;" alt="Before preview">
+                  <div class="photo-uploading-overlay" id="beforeUploadingOverlay" style="display:none;"><div class="photo-spinner"></div><span>Uploading...</span></div>
+                </div>
+                <div class="photo-upload-actions">
+                  <label for="beforeImgFile" class="btn-outline photo-choose-btn" id="beforeChooseLabel">Choose Photo</label>
+                  <input type="file" id="beforeImgFile" accept="image/*" style="display:none;">
+                  <button type="button" class="photo-remove-btn" id="beforeRemoveBtn" style="display:none;">Remove</button>
+                </div>
+                <p class="photo-upload-status" id="beforeUploadStatus"></p>
+              </div>
+            </div>
+
+            <div>
+              <h3 style="margin-top:0;">After Image</h3>
+              <p class="settings-hint">Upload the image shown on the right side of the Before / After slider on the homepage.</p>
+              <div class="photo-upload-box">
+                <div class="photo-preview" style="aspect-ratio:4/5;">
+                  <span id="afterPhotoPlaceholder">Using default illustration</span>
+                  <img id="afterPhotoImg" style="display:none;" alt="After preview">
+                  <div class="photo-uploading-overlay" id="afterUploadingOverlay" style="display:none;"><div class="photo-spinner"></div><span>Uploading...</span></div>
+                </div>
+                <div class="photo-upload-actions">
+                  <label for="afterImgFile" class="btn-outline photo-choose-btn" id="afterChooseLabel">Choose Photo</label>
+                  <input type="file" id="afterImgFile" accept="image/*" style="display:none;">
+                  <button type="button" class="photo-remove-btn" id="afterRemoveBtn" style="display:none;">Remove</button>
+                </div>
+                <p class="photo-upload-status" id="afterUploadStatus"></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-card" style="margin-top:20px;">
+            <h3>Admin Password</h3>
+            <p class="settings-hint">Change the password used to sign in to this admin dashboard. The new password is saved in this browser.</p>
+            <div class="form-grid-2">
+              <div class="form-row">
+                <label for="currentAdminPassword">Current Password</label>
+                <input type="password" id="currentAdminPassword" autocomplete="current-password" placeholder="Current password">
+              </div>
+              <div class="form-row">
+                <label for="newAdminPassword">New Password</label>
+                <input type="password" id="newAdminPassword" autocomplete="new-password" placeholder="New password">
+              </div>
+            </div>
+            <div class="form-row" style="margin-bottom:0;">
+              <label for="confirmAdminPassword">Confirm New Password</label>
+              <input type="password" id="confirmAdminPassword" autocomplete="new-password" placeholder="Confirm new password">
+            </div>
+            <button type="button" class="btn-gold" id="changeAdminPasswordBtn" style="margin-top:16px;">Change Password</button>
+            <p class="photo-upload-status" id="passwordChangeStatus"></p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===== Product Form Modal ===== -->
+<div class="modal-overlay" id="productModalOverlay">
+  <div class="modal">
+    <div class="modal-head"><h3 id="productModalTitle">Add Product</h3><button class="modal-close" id="productModalClose">&times;</button></div>
+    <div class="modal-body">
+      <form id="productForm">
+        <input type="hidden" id="pfId">
+        <div class="form-row"><label for="pfName">Product Name</label><input type="text" id="pfName" placeholder="e.g. Signature Botanical Hair Oil"></div>
+        <div class="form-grid-2">
+          <div class="form-row"><label for="pfSize">Size</label><input type="text" id="pfSize" placeholder="e.g. 100ml"></div>
+          <div class="form-row">
+            <label for="pfCategory">Category</label>
+            <select id="pfCategory">
+              <option value="oils">Signature Oils</option>
+              <option value="minis">Minis &amp; Add-ons</option>
+              <option value="gifts">Gift Sets</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-row"><label for="pfPrice">Price (Rs)</label><input type="number" id="pfPrice" placeholder="2999" min="0"></div>
+          <div class="form-row"><label for="pfOldPrice">Old Price â€” optional (Rs)</label><input type="number" id="pfOldPrice" placeholder="3999" min="0"></div>
+        </div>
+        <div class="form-row">
+          <label for="pfTag">Tag (optional)</label>
+          <select id="pfTag"><option value="">None</option><option value="Bestseller">Bestseller</option><option value="New">New</option></select>
+        </div>
+        <div class="form-row">
+          <label>Product Photo</label>
+          <div class="photo-upload-box">
+            <div class="photo-preview">
+              <span id="photoPreviewPlaceholder">No photo selected</span>
+              <img id="photoPreviewImg" style="display:none;" alt="Preview">
+              <div class="photo-uploading-overlay" id="photoUploadingOverlay" style="display:none;"><div class="photo-spinner"></div><span>Uploading...</span></div>
+            </div>
+            <div class="photo-upload-actions">
+              <label for="pfImgFile" class="btn-outline photo-choose-btn">Choose Photo</label>
+              <input type="file" id="pfImgFile" accept="image/*" style="display:none;">
+              <button type="button" class="photo-remove-btn" id="photoRemoveBtn" style="display:none;">Remove</button>
+            </div>
+            <p class="photo-upload-status" id="photoUploadStatus"></p>
+          </div>
+          <input type="hidden" id="pfImg">
+          <p class="form-hint">Photo uploads to free image hosting and gets a real web link â€” visible to every customer, on any device.</p>
+        </div>
+        <div class="form-row"><label for="pfDesc">Short Description</label><textarea id="pfDesc" placeholder="One short line shown on the product card" style="min-height:56px;"></textarea></div>
+        <div class="form-row"><label for="pfFullDesc">Full Description</label><textarea id="pfFullDesc" placeholder="Longer description shown on the product page"></textarea></div>
+        <div class="form-row"><label for="pfIngredients">Ingredients</label><textarea id="pfIngredients" placeholder="List of ingredients"></textarea></div>
+        <div class="form-row"><label for="pfDirections">Directions for Use</label><textarea id="pfDirections" placeholder="How to use this product"></textarea></div>
+        <div class="form-row"><label for="pfCaution">Caution</label><textarea id="pfCaution" placeholder="Safety notes, patch test reminders, etc."></textarea></div>
+      </form>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-outline" id="productCancelBtn">Cancel</button>
+      <button class="btn-gold" id="productSaveBtn">Save Product</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Coupon Form Modal ===== -->
+<div class="modal-overlay" id="couponModalOverlay">
+  <div class="modal" style="max-width:460px;">
+    <div class="modal-head"><h3 id="couponModalTitle">Add Coupon</h3><button class="modal-close" id="couponModalClose">&times;</button></div>
+    <div class="modal-body">
+      <form id="couponForm">
+        <input type="hidden" id="cfOriginalCode">
+        <div class="form-row"><label for="cfCode">Coupon Code</label><input type="text" id="cfCode" placeholder="e.g. WELCOME10" style="text-transform:uppercase;"></div>
+        <div class="form-grid-2">
+          <div class="form-row">
+            <label for="cfType">Discount Type</label>
+            <select id="cfType">
+              <option value="percent">Percentage Off</option>
+              <option value="flat">Flat Amount Off</option>
+              <option value="freeship">Free Delivery</option>
+            </select>
+          </div>
+          <div class="form-row" id="cfValueRow"><label for="cfValue">Value</label><input type="number" id="cfValue" placeholder="10" min="0"></div>
+        </div>
+        <div class="form-row"><label for="cfMinOrder">Minimum Order (optional, Rs)</label><input type="number" id="cfMinOrder" placeholder="0" min="0"></div>
+        <div class="form-row checkbox-row"><input type="checkbox" id="cfActive" checked><label for="cfActive" style="margin:0;">Active</label></div>
+      </form>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-outline" id="couponCancelBtn">Cancel</button>
+      <button class="btn-gold" id="couponSaveBtn">Save Coupon</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Order Detail Modal ===== -->
+<div class="modal-overlay" id="orderModalOverlay">
+  <div class="modal">
+    <div class="modal-head"><h3>Order Details</h3><button class="modal-close" id="orderModalClose">&times;</button></div>
+    <div class="modal-body order-detail-body" id="orderDetailBody"></div>
+    <div class="modal-foot"><button class="btn-outline" id="orderDetailCloseBtn" style="flex:1;">Close</button></div>
+  </div>
+</div>
+
+<!-- ===== Delete Confirm ===== -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <p id="confirmMessage">Are you sure? This cannot be undone.</p>
+    <div class="confirm-actions">
+      <button class="confirm-cancel" id="confirmCancelBtn">Cancel</button>
+      <button class="confirm-delete" id="confirmDeleteBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span id="toastMsg">Saved</span></div>
+
+<script>
+/* =========================================================
+   ADMIN CREDENTIALS â€” change these to your own
+   ========================================================= */
+const ADMIN_CREDENTIALS = {
+  username: "admin",
+  password: localStorage.getItem('rooted_admin_password') || "rooted2026"
+};
+
+/* =========================================================
+   IMAGE HOSTING (ImgBB) â€” required for product photo uploads
+   Get a free API key at https://api.imgbb.com/ and paste it below.
+   ========================================================= */
+const IMGBB_API_KEY = "PASTE_YOUR_IMGBB_API_KEY_HERE";
+
+/* =========================================================
+   SUPABASE BACKEND
+   Paste your Supabase Project URL + anon/publishable key below.
+   The rest of the dashboard keeps the same UI/actions.
+   ========================================================= */
+const SUPABASE_URL = "https://jccszipeywcasoinsoaa.supabase.co/rest/v1/";
+const SUPABASE_ANON_KEY = "sb_publishable_gTqJG1B6qodqnoFDICohjw_HOE6sBAX";
+
+function supabaseHeaders(extra={}){
+  return {
+    apikey: SUPABASE_ANON_KEY,
+    Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+    'Content-Type':'application/json',
+    ...extra
+  };
+}
+function assertSupabase(){
+  if(!SUPABASE_URL || SUPABASE_URL.includes('PASTE_YOUR_SUPABASE_URL_HERE') || !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.includes('PASTE_YOUR_SUPABASE_ANON_KEY_HERE')) throw new Error('Supabase is not configured');
+}
+async function sbFetch(path, options={}){
+  assertSupabase();
+  const res=await fetch(SUPABASE_URL.replace(/\/$/,'') + path, {
+    ...options, headers:supabaseHeaders(options.headers||{})
+  });
+  const text=await res.text();
+  let data=null; try{ data=text?JSON.parse(text):null; }catch(e){ data=text; }
+  if(!res.ok) throw new Error(data?.message || data?.hint || data?.error_description || `Supabase ${res.status}`);
+  return data;
+}
+async function apiGet(){
+  const [productsRows,couponRows,orderRows,subscriberRows,settingRows]=await Promise.all([
+    sbFetch('/rest/v1/rooted_products?select=id,data&order=id.asc'),
+    sbFetch('/rest/v1/rooted_coupons?select=code,data&order=code.asc'),
+    sbFetch('/rest/v1/rooted_orders?select=order_number,order_id,data,status,timestamp&order=order_number.asc'),
+    sbFetch('/rest/v1/rooted_subscribers?select=email&order=created_at.asc'),
+    sbFetch('/rest/v1/rooted_settings?select=key,value')
+  ]);
+  const settings={}; settingRows.forEach(r=>settings[r.key]=r.value);
+  return {
+    status:'success', ok:true,
+    products:(productsRows||[]).map(r=>r.data||{id:r.id}),
+    coupons:(couponRows||[]).map(r=>r.data||{code:r.code}),
+    orders:(orderRows||[]).map(r=>({...((r.data)||{}),orderId:r.order_id||r.data?.orderId,status:r.status||r.data?.status,timestamp:r.timestamp||r.data?.timestamp,orderNumber:r.order_number})),
+    newsletter:(subscriberRows||[]).map(r=>r.email), settings
+  };
+}
+async function apiPost(action,data){
+  if(action==='createOrder'){
+    const result=await sbFetch('/rest/v1/rpc/create_rooted_order',{method:'POST',body:JSON.stringify({p_data:data})});
+    const saved=Array.isArray(result)?result[0]:result;
+    const fresh=await apiGet();
+    return {...fresh, createdOrder:saved};
+  }
+  if(action==='saveProduct'){ await sbFetch('/rest/v1/rooted_products',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({id:data.id,data})}); return apiGet(); }
+  if(action==='deleteProduct'){ await sbFetch(`/rest/v1/rooted_products?id=eq.${encodeURIComponent(data.id)}`,{method:'DELETE'}); return apiGet(); }
+  if(action==='saveCoupon'){ await sbFetch('/rest/v1/rooted_coupons',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({code:data.code,data})}); return apiGet(); }
+  if(action==='deleteCoupon'){ await sbFetch(`/rest/v1/rooted_coupons?code=eq.${encodeURIComponent(data.code)}`,{method:'DELETE'}); return apiGet(); }
+  if(action==='saveSetting'){ await sbFetch('/rest/v1/rooted_settings',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({key:data.key,value:data.value})}); return apiGet(); }
+  if(action==='updateOrderStatus'){ await sbFetch(`/rest/v1/rooted_orders?order_id=eq.${encodeURIComponent(data.orderId)}`,{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({status:data.status})}); return apiGet(); }
+  if(action==='subscribe'){ await sbFetch('/rest/v1/rooted_subscribers',{method:'POST',headers:{Prefer:'resolution=ignore-duplicates,return=minimal'},body:JSON.stringify({email:data.email})}); return apiGet(); }
+  throw new Error('Unknown action: '+action);
+}
+
+/* =========================================================
+   DEFAULTS (mirrors index.html)
+   ========================================================= */
+const DEFAULT_PRODUCTS = [
+  { id:"o1", name:"Signature Botanical Hair Oil", size:"100ml", category:"oils", price:2999, oldPrice:3999, tag:"Bestseller", img:"assets/product-signature.jpg", desc:"Our original six-botanical blend for everyday scalp nourishment.", fullDesc:"The oil that started it all. A featherlight blend of six traditional botanicals, cold-pressed and hand-mixed in small batches.", ingredients:"Cold-Pressed Castor Oil, Bhringraj Extract, Amla, Rosemary Essential Oil, Black Seed Oil (Kalonji), Argan Oil.", directions:"Apply 4â€“6 drops to the scalp. Massage 5â€“10 minutes. Leave in 1â€“2 hours or overnight, then rinse. Use 2â€“3 times a week.", caution:"For external use only. Patch test before first use. Keep out of reach of children." },
+  { id:"o2", name:"Scalp Detox Pre-Wash Oil", size:"100ml", category:"oils", price:2499, oldPrice:null, tag:"New", img:"assets/product-detox.jpg", desc:"A clarifying pre-shampoo treatment for a fresher-feeling scalp.", fullDesc:"A slightly warming blend meant to sit on the scalp before wash day.", ingredients:"Castor Oil, Rosemary Essential Oil, Black Seed Oil, Tea Tree Extract, Argan Oil.", directions:"Apply before shampooing, massage 5 minutes, rinse thoroughly.", caution:"Patch test recommended. Avoid contact with eyes." },
+  { id:"o3", name:"Overnight Repair Elixir", size:"50ml", category:"oils", price:2799, oldPrice:null, tag:null, img:"assets/product-overnight.jpg", desc:"A richer night-time blend for concentrated overnight nourishment.", fullDesc:"A heavier formulation for deeper overnight treatment once or twice a week.", ingredients:"Castor Oil, Argan Oil, Amla Extract, Bhringraj Extract.", directions:"Apply before bed, cover hair, wash out in the morning.", caution:"Patch test before first use. Keep out of reach of children." },
+  { id:"m1", name:"Travel Size Botanical Oil", size:"30ml", category:"minis", price:1199, oldPrice:null, tag:null, img:"assets/product-travel.jpg", desc:"Our Signature blend in a bag-friendly size.", fullDesc:"The same six-botanical Signature formula, bottled smaller for travel.", ingredients:"Cold-Pressed Castor Oil, Bhringraj Extract, Amla, Rosemary Essential Oil, Black Seed Oil, Argan Oil.", directions:"Apply 3â€“4 drops, massage, leave in, then rinse. Use 2â€“3 times weekly.", caution:"Patch test recommended before first use." },
+  { id:"m2", name:"Rosemary Boost Add-on", size:"30ml", category:"minis", price:1499, oldPrice:null, tag:null, img:"assets/product-rosemary.jpg", desc:"A concentrated rosemary drop-in to boost any oil blend.", fullDesc:"A few drops added to your regular oil for an extra herbaceous lift.", ingredients:"Rosemary Essential Oil, Jojoba Oil, Vitamin E.", directions:"Add 2â€“3 drops to your regular hair oil, or apply directly before massage.", caution:"Concentrated blend â€” patch test essential. Not recommended during pregnancy without consulting a doctor." },
+  { id:"g1", name:"Ritual Gift Set", size:"Oil + Comb + Pouch", category:"gifts", price:4999, oldPrice:5999, tag:"Bestseller", img:"assets/product-giftset.jpg", desc:"Signature Oil, a wooden scalp comb, and a linen pouch â€” ready to gift.", fullDesc:"Everything needed to start the ritual, packaged for gifting.", ingredients:"Includes Signature Botanical Hair Oil â€” see its full ingredient list.", directions:"Use the wooden comb dry or with oil applied, in gentle upward strokes.", caution:"Patch test the oil before first use. Wooden comb is not dishwasher safe." },
+];
+const DEFAULT_COUPONS = [
+  { code:"WELCOME10", type:"percent", value:10, minOrder:0, active:true },
+  { code:"FREESHIP", type:"freeship", value:0, minOrder:0, active:true },
+  { code:"SAVE300", type:"flat", value:300, minOrder:3000, active:true },
+];
+
+const CURRENCY = "Rs";
+function fmt(n){ return CURRENCY + ' ' + Number(n||0).toLocaleString('en-PK'); }
+function escapeHtml(str){ const div = document.createElement('div'); div.textContent = str || ''; return div.innerHTML; }
+
+/* =========================================================
+   AUTH
+   ========================================================= */
+const loginScreen = document.getElementById('loginScreen');
+const dashScreen = document.getElementById('dashScreen');
+
+function checkSession(){
+  if(sessionStorage.getItem('rooted_admin_auth') === 'true') showDashboard();
+}
+document.getElementById('loginForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const errorBox = document.getElementById('loginError');
+  if(user === ADMIN_CREDENTIALS.username && pass === ADMIN_CREDENTIALS.password){
+    sessionStorage.setItem('rooted_admin_auth', 'true');
+    errorBox.classList.remove('show');
+    showDashboard();
+  }else{
+    errorBox.classList.add('show');
+  }
+});
+function showDashboard(){
+  loginScreen.style.display = 'none';
+  dashScreen.classList.add('active');
+  refreshAll();
+}
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  sessionStorage.removeItem('rooted_admin_auth');
+  dashScreen.classList.remove('active');
+  loginScreen.style.display = 'flex';
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+});
+
+/* =========================================================
+   ADMIN PASSWORD CHANGE
+   ========================================================= */
+document.getElementById('changeAdminPasswordBtn').addEventListener('click', () => {
+  const current = document.getElementById('currentAdminPassword').value;
+  const next = document.getElementById('newAdminPassword').value;
+  const confirm = document.getElementById('confirmAdminPassword').value;
+  const status = document.getElementById('passwordChangeStatus');
+
+  status.textContent = '';
+  status.className = 'photo-upload-status';
+
+  if(current !== ADMIN_CREDENTIALS.password){
+    status.textContent = 'Current password is incorrect.';
+    status.className = 'photo-upload-status error';
+    return;
+  }
+  if(next.length < 6){
+    status.textContent = 'New password must be at least 6 characters.';
+    status.className = 'photo-upload-status error';
+    return;
+  }
+  if(next !== confirm){
+    status.textContent = 'New passwords do not match.';
+    status.className = 'photo-upload-status error';
+    return;
+  }
+
+  ADMIN_CREDENTIALS.password = next;
+  localStorage.setItem('rooted_admin_password', next);
+
+  document.getElementById('currentAdminPassword').value = '';
+  document.getElementById('newAdminPassword').value = '';
+  document.getElementById('confirmAdminPassword').value = '';
+
+  status.textContent = 'Password changed successfully.';
+  status.className = 'photo-upload-status success';
+  showToast('Admin password changed');
+});
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + item.dataset.panel).classList.add('active');
+    closeSidebar();
+  });
+});
+const sidebar = document.getElementById('sidebar');
+const sidebarOverlay = document.getElementById('sidebarOverlay');
+document.getElementById('menuBtn').addEventListener('click', () => { sidebar.classList.add('open'); sidebarOverlay.classList.add('open'); });
+function closeSidebar(){ sidebar.classList.remove('open'); sidebarOverlay.classList.remove('open'); }
+sidebarOverlay.addEventListener('click', closeSidebar);
+
+/* =========================================================
+   STORE-WIDE SALE
+   ========================================================= */
+let saleSettings = {active:false, percentage:0};
+function renderSaleSettings(){
+  document.getElementById('saleActive').checked = !!saleSettings.active;
+  document.getElementById('salePercentage').value = Number(saleSettings.percentage||0);
+  updateSalePreview();
+}
+function updateSalePreview(){
+  const pct=Math.min(100,Math.max(0,Number(document.getElementById('salePercentage').value)||0));
+  const price=Math.round(2999*(1-pct/100));
+  document.getElementById('salePreviewPrice').textContent=fmt(price);
+}
+document.getElementById('salePercentage').addEventListener('input',updateSalePreview);
+document.getElementById('saveSaleBtn').addEventListener('click',async()=>{
+  const percentage=Math.min(100,Math.max(0,Number(document.getElementById('salePercentage').value)||0));
+  const active=document.getElementById('saleActive').checked;
+  const status=document.getElementById('saleStatus');
+  try{
+    await apiPost('saveSetting',{key:'sale',value:{active,percentage}});
+    saleSettings={active,percentage}; renderSaleSettings();
+    status.textContent=active ? `Sale is LIVE at ${percentage}% off.` : 'Sale is OFF.';
+    status.className='photo-upload-status success';
+    showToast(active ? `Sale live â€” ${percentage}% off` : 'Sale turned off');
+  }catch(err){ console.error(err); status.textContent='Could not save sale settings to Supabase.'; status.className='photo-upload-status error'; }
+});
+
+/* =========================================================
+   PRODUCTS
+   ========================================================= */
+let products = [];
+
+function renderProductsTable(filter=''){
+  const tbody = document.getElementById('productsBody');
+  const q = filter.trim().toLowerCase();
+  const list = q ? products.filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)) : products;
+  document.getElementById('statProducts').textContent = products.length;
+
+  if(list.length === 0){
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><p>No products yet</p>Click "+ Add Product" to create your first listing</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(p => `
+    <tr>
+      <td><div class="prod-cell"><div class="prod-thumb"><img src="${p.img}" alt="" onerror="this.style.display='none'"></div><div><div class="prod-name">${escapeHtml(p.name)}</div><div class="prod-cat">${p.size || ''}</div></div></div></td>
+      <td class="prod-cat">${p.category}</td>
+      <td>${p.oldPrice ? `<span style="text-decoration:line-through; color:#a09c92; margin-right:6px;">${fmt(p.oldPrice)}</span>` : ''}${fmt(p.price)}</td>
+      <td>${p.tag ? `<span class="badge ${p.tag.toLowerCase()}">${p.tag}</span>` : `<span class="badge none">â€”</span>`}</td>
+      <td><div class="row-actions"><button class="icon-btn" title="Edit" onclick="openProductModal('${p.id}')">âœŽ</button><button class="icon-btn danger" title="Delete" onclick="confirmDeleteProduct('${p.id}')">ðŸ—‘</button></div></td>
+    </tr>
+  `).join('');
+}
+document.getElementById('productSearch').addEventListener('input', (e) => renderProductsTable(e.target.value));
+
+const productModalOverlay = document.getElementById('productModalOverlay');
+let editingProductId = null;
+
+function openProductModal(id=null){
+  editingProductId = id;
+  document.getElementById('productForm').reset();
+  document.getElementById('photoUploadStatus').textContent = '';
+  document.getElementById('photoUploadStatus').className = 'photo-upload-status';
+  if(id){
+    const p = products.find(x => x.id === id);
+    document.getElementById('productModalTitle').textContent = 'Edit Product';
+    document.getElementById('pfId').value = p.id;
+    document.getElementById('pfName').value = p.name;
+    document.getElementById('pfSize').value = p.size || '';
+    document.getElementById('pfCategory').value = p.category;
+    document.getElementById('pfTag').value = p.tag || '';
+    document.getElementById('pfPrice').value = p.price;
+    document.getElementById('pfOldPrice').value = p.oldPrice || '';
+    document.getElementById('pfImg').value = p.img;
+    document.getElementById('pfDesc').value = p.desc || '';
+    document.getElementById('pfFullDesc').value = p.fullDesc || '';
+    document.getElementById('pfIngredients').value = p.ingredients || '';
+    document.getElementById('pfDirections').value = p.directions || '';
+    document.getElementById('pfCaution').value = p.caution || '';
+    setPhotoPreview(p.img);
+  }else{
+    document.getElementById('productModalTitle').textContent = 'Add Product';
+    ['pfId','pfName','pfSize','pfTag','pfPrice','pfOldPrice','pfImg','pfDesc','pfFullDesc','pfIngredients','pfDirections','pfCaution'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('pfCategory').value = 'oils';
+    setPhotoPreview('');
+  }
+  document.getElementById('pfImgFile').value = '';
+  productModalOverlay.classList.add('open');
+}
+function closeProductModal(){ productModalOverlay.classList.remove('open'); editingProductId = null; }
+
+function setPhotoPreview(src){
+  const img = document.getElementById('photoPreviewImg');
+  const placeholder = document.getElementById('photoPreviewPlaceholder');
+  const removeBtn = document.getElementById('photoRemoveBtn');
+  if(src){ img.src = src; img.style.display = 'block'; placeholder.style.display = 'none'; removeBtn.style.display = 'inline-block'; }
+  else{ img.src = ''; img.style.display = 'none'; placeholder.style.display = 'block'; removeBtn.style.display = 'none'; }
+}
+
+document.getElementById('pfImgFile').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  if(!IMGBB_API_KEY || IMGBB_API_KEY === "PASTE_YOUR_IMGBB_API_KEY_HERE"){
+    const status = document.getElementById('photoUploadStatus');
+    status.textContent = 'Image hosting is not set up yet. See the setup guide to add a free ImgBB API key.';
+    status.className = 'photo-upload-status error';
+    e.target.value = '';
+    return;
+  }
+  if(file.size > 10 * 1024 * 1024){ showToast('Photo is too large â€” please choose one under 10MB'); e.target.value = ''; return; }
+
+  const overlay = document.getElementById('photoUploadingOverlay');
+  const status = document.getElementById('photoUploadStatus');
+  const chooseLabel = document.querySelector('.photo-choose-btn');
+  overlay.style.display = 'flex'; status.textContent = ''; status.className = 'photo-upload-status';
+  chooseLabel.style.pointerEvents = 'none'; chooseLabel.style.opacity = '0.6';
+
+  try{
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+    const formData = new FormData();
+    formData.append('image', base64);
+    const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method:'POST', body: formData });
+    const result = await response.json();
+    if(result.success){
+      document.getElementById('pfImg').value = result.data.url;
+      setPhotoPreview(result.data.url);
+      status.textContent = 'Uploaded â€” visible to all customers';
+      status.className = 'photo-upload-status success';
+    }else{
+      throw new Error(result.error?.message || 'Upload failed');
+    }
+  }catch(err){
+    console.error('ImgBB upload failed:', err);
+    status.textContent = 'Upload failed. Please check your internet connection and try again.';
+    status.className = 'photo-upload-status error';
+  }finally{
+    overlay.style.display = 'none'; chooseLabel.style.pointerEvents = ''; chooseLabel.style.opacity = '';
+  }
+});
+document.getElementById('photoRemoveBtn').addEventListener('click', () => {
+  document.getElementById('pfImg').value = ''; document.getElementById('pfImgFile').value = '';
+  document.getElementById('photoUploadStatus').textContent = ''; document.getElementById('photoUploadStatus').className = 'photo-upload-status';
+  setPhotoPreview('');
+});
+
+/* =========================================================
+   SETTINGS â€” Hero Image (uploads via ImgBB, same as product photos)
+   ========================================================= */
+function setHeroPreview(src){
+  const img = document.getElementById('heroPhotoImg');
+  const placeholder = document.getElementById('heroPhotoPlaceholder');
+  const removeBtn = document.getElementById('heroRemoveBtn');
+  if(src){ img.src = src; img.style.display = 'block'; placeholder.style.display = 'none'; removeBtn.style.display = 'inline-block'; }
+  else{ img.src = ''; img.style.display = 'none'; placeholder.textContent = 'Using default illustration'; placeholder.style.display = 'block'; removeBtn.style.display = 'none'; }
+}
+(function initHeroSettingsPreview(){ setHeroPreview(''); })();
+
+document.getElementById('heroImgFile').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  if(!IMGBB_API_KEY || IMGBB_API_KEY === "PASTE_YOUR_IMGBB_API_KEY_HERE"){
+    const status = document.getElementById('heroUploadStatus');
+    status.textContent = 'Image hosting is not set up yet. See the setup guide to add a free ImgBB API key.';
+    status.className = 'photo-upload-status error';
+    e.target.value = '';
+    return;
+  }
+  if(file.size > 10 * 1024 * 1024){ showToast('Photo is too large â€” please choose one under 10MB'); e.target.value = ''; return; }
+
+  const overlay = document.getElementById('heroUploadingOverlay');
+  const status = document.getElementById('heroUploadStatus');
+  const chooseLabel = document.getElementById('heroChooseLabel');
+  overlay.style.display = 'flex'; status.textContent = ''; status.className = 'photo-upload-status';
+  chooseLabel.style.pointerEvents = 'none'; chooseLabel.style.opacity = '0.6';
+
+  try{
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+    const formData = new FormData();
+    formData.append('image', base64);
+    const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method:'POST', body: formData });
+    const result = await response.json();
+    if(result.success){
+      await apiPost('saveSetting', {key:'heroImage', value:result.data.url});
+      setHeroPreview(result.data.url);
+      status.textContent = 'Uploaded â€” this now shows on your homepage for every visitor';
+      status.className = 'photo-upload-status success';
+    }else{
+      throw new Error(result.error?.message || 'Upload failed');
+    }
+  }catch(err){
+    console.error('ImgBB upload failed:', err);
+    status.textContent = 'Upload failed. Please check your internet connection and try again.';
+    status.className = 'photo-upload-status error';
+  }finally{
+    overlay.style.display = 'none'; chooseLabel.style.pointerEvents = ''; chooseLabel.style.opacity = '';
+  }
+});
+document.getElementById('heroRemoveBtn').addEventListener('click', async () => {
+  try{ await apiPost('saveSetting', {key:'heroImage', value:''}); }catch(e){ console.error(e); }
+  document.getElementById('heroImgFile').value = '';
+  document.getElementById('heroUploadStatus').textContent = '';
+  document.getElementById('heroUploadStatus').className = 'photo-upload-status';
+  setHeroPreview('');
+  showToast('Removed â€” homepage will show the default illustration again');
+});
+
+/* =========================================================
+   SETTINGS â€” Before / After slider images
+   ========================================================= */
+function setBeforeAfterPreview(beforeUrl, afterUrl){
+  const pairs=[
+    {key:'beforeImage',url:beforeUrl,img:'beforePhotoImg',placeholder:'beforePhotoPlaceholder',remove:'beforeRemoveBtn'},
+    {key:'afterImage',url:afterUrl,img:'afterPhotoImg',placeholder:'afterPhotoPlaceholder',remove:'afterRemoveBtn'}
+  ];
+  pairs.forEach(x=>{
+    const img=document.getElementById(x.img), ph=document.getElementById(x.placeholder), rm=document.getElementById(x.remove);
+    if(x.url){ img.src=x.url; img.style.display='block'; ph.style.display='none'; rm.style.display='inline-block'; }
+    else{ img.src=''; img.style.display='none'; ph.textContent='Using default illustration'; ph.style.display='block'; rm.style.display='none'; }
+  });
+}
+(function initBeforeAfterSettings(){ setBeforeAfterPreview('', ''); })();
+
+async function uploadBeforeAfterImage(which, file){
+  const key=which==='before'?'beforeImage':'afterImage';
+  const imgId=which==='before'?'beforePhotoImg':'afterPhotoImg';
+  const phId=which==='before'?'beforePhotoPlaceholder':'afterPhotoPlaceholder';
+  const rmId=which==='before'?'beforeRemoveBtn':'afterRemoveBtn';
+  const overlayId=which==='before'?'beforeUploadingOverlay':'afterUploadingOverlay';
+  const statusId=which==='before'?'beforeUploadStatus':'afterUploadStatus';
+  const chooseId=which==='before'?'beforeChooseLabel':'afterChooseLabel';
+  const inputId=which==='before'?'beforeImgFile':'afterImgFile';
+  const status=document.getElementById(statusId), overlay=document.getElementById(overlayId), choose=document.getElementById(chooseId);
+  if(!IMGBB_API_KEY || IMGBB_API_KEY === 'PASTE_YOUR_IMGBB_API_KEY_HERE'){ status.textContent='Image hosting is not set up yet. Add your ImgBB API key first.'; status.className='photo-upload-status error'; document.getElementById(inputId).value=''; return; }
+  if(file.size>10*1024*1024){ showToast('Photo is too large â€” please choose one under 10MB'); document.getElementById(inputId).value=''; return; }
+  overlay.style.display='flex'; status.textContent=''; status.className='photo-upload-status'; choose.style.pointerEvents='none'; choose.style.opacity='.6';
+  try{
+    const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result.split(',')[1]);reader.onerror=reject;reader.readAsDataURL(file);});
+    const fd=new FormData(); fd.append('image',base64);
+    const response=await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`,{method:'POST',body:fd});
+    const result=await response.json();
+    if(!result.success) throw new Error(result.error?.message || 'Upload failed');
+    await apiPost('saveSetting',{key,value:result.data.url});
+    const img=document.getElementById(imgId); img.src=result.data.url; img.style.display='block';
+    document.getElementById(phId).style.display='none'; document.getElementById(rmId).style.display='inline-block';
+    status.textContent='Uploaded â€” visible to every customer on every device'; status.className='photo-upload-status success';
+  }catch(err){ console.error(err); status.textContent='Upload failed. Please check your internet connection and try again.'; status.className='photo-upload-status error'; }
+  finally{ overlay.style.display='none'; choose.style.pointerEvents=''; choose.style.opacity=''; document.getElementById(inputId).value=''; }
+}
+
+document.getElementById('beforeImgFile').addEventListener('change',e=>{const f=e.target.files[0];if(f)uploadBeforeAfterImage('before',f);});
+document.getElementById('afterImgFile').addEventListener('change',e=>{const f=e.target.files[0];if(f)uploadBeforeAfterImage('after',f);});
+document.getElementById('beforeRemoveBtn').addEventListener('click',async()=>{try{const d=await apiPost('saveSetting',{key:'beforeImage',value:''});setBeforeAfterPreview((d.settings&&d.settings.beforeImage)||'',(d.settings&&d.settings.afterImage)||'');showToast('Before image removed');}catch(e){console.error(e);showToast('Could not remove image');}});
+document.getElementById('afterRemoveBtn').addEventListener('click',async()=>{try{const d=await apiPost('saveSetting',{key:'afterImage',value:''});setBeforeAfterPreview((d.settings&&d.settings.beforeImage)||'',(d.settings&&d.settings.afterImage)||'');showToast('After image removed');}catch(e){console.error(e);showToast('Could not remove image');}});
+document.getElementById('addProductBtn').addEventListener('click', () => openProductModal());
+document.getElementById('productModalClose').addEventListener('click', closeProductModal);
+document.getElementById('productCancelBtn').addEventListener('click', closeProductModal);
+productModalOverlay.addEventListener('click', (e) => { if(e.target === productModalOverlay) closeProductModal(); });
+
+function genProductId(category){
+  const prefix = category === 'oils' ? 'o' : category === 'minis' ? 'm' : 'g';
+  let n = 1;
+  while(products.find(p => p.id === prefix + n)) n++;
+  return prefix + n;
+}
+document.getElementById('productSaveBtn').addEventListener('click', async () => {
+  const name = document.getElementById('pfName').value.trim();
+  const category = document.getElementById('pfCategory').value;
+  const size = document.getElementById('pfSize').value.trim();
+  const tag = document.getElementById('pfTag').value || null;
+  const price = parseFloat(document.getElementById('pfPrice').value);
+  const oldPriceRaw = document.getElementById('pfOldPrice').value;
+  const oldPrice = oldPriceRaw ? parseFloat(oldPriceRaw) : null;
+  const img = document.getElementById('pfImg').value.trim() || 'assets/placeholder.jpg';
+  const desc = document.getElementById('pfDesc').value.trim();
+  const fullDesc = document.getElementById('pfFullDesc').value.trim();
+  const ingredients = document.getElementById('pfIngredients').value.trim();
+  const directions = document.getElementById('pfDirections').value.trim();
+  const caution = document.getElementById('pfCaution').value.trim();
+
+  if(!name || !price){ showToast('Please fill in the product name and price'); return; }
+
+  const wasEditing = !!editingProductId;
+  let savedProduct;
+  if(wasEditing){
+    const idx = products.findIndex(p => p.id === editingProductId);
+    if(idx < 0){ showToast('Product not found â€” refresh and try again'); return; }
+    savedProduct = { ...products[idx], name, size, category, tag, price, oldPrice, img, desc, fullDesc, ingredients, directions, caution };
+  }else{
+    savedProduct = { id:genProductId(category), name, size, category, tag, price, oldPrice, img, desc, fullDesc, ingredients, directions, caution };
+  }
+  const saveBtn = document.getElementById('productSaveBtn');
+  saveBtn.disabled = true;
+  try{
+    await apiPost('saveProduct', savedProduct);
+    await loadCloudState();
+    showToast(wasEditing ? 'Product updated everywhere' : 'Product added everywhere');
+    closeProductModal();
+  }catch(err){
+    console.error(err);
+    showToast('Could not save product to Google Sheets');
+  }finally{ saveBtn.disabled = false; }
+});
+
+const confirmOverlay = document.getElementById('confirmOverlay');
+let pendingDelete = null; // {type:'product'|'coupon', id}
+function confirmDeleteProduct(id){
+  pendingDelete = { type:'product', id };
+  document.getElementById('confirmMessage').textContent = 'Are you sure you want to delete this product? This cannot be undone.';
+  confirmOverlay.classList.add('open');
+}
+document.getElementById('confirmCancelBtn').addEventListener('click', () => { confirmOverlay.classList.remove('open'); pendingDelete = null; });
+document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+  try{
+    if(pendingDelete && pendingDelete.type === 'product'){
+      await apiPost('deleteProduct', {id:pendingDelete.id});
+      await loadCloudState();
+      showToast('Product deleted everywhere');
+    }else if(pendingDelete && pendingDelete.type === 'coupon'){
+      await apiPost('deleteCoupon', {code:pendingDelete.id});
+      await loadCloudState();
+      showToast('Coupon deleted everywhere');
+    }
+  }catch(err){
+    console.error(err);
+    showToast('Could not update server');
+  }finally{
+    confirmOverlay.classList.remove('open');
+    pendingDelete = null;
+  }
+});
+
+/* =========================================================
+   COUPONS
+   ========================================================= */
+let coupons = [];
+
+function couponValueLabel(c){
+  if(c.type === 'percent') return c.value + '%';
+  if(c.type === 'flat') return fmt(c.value);
+  if(c.type === 'freeship') return 'â€”';
+  return '';
+}
+function renderCouponsTable(filter=''){
+  const tbody = document.getElementById('couponsBody');
+  const q = filter.trim().toLowerCase();
+  const list = q ? coupons.filter(c => c.code.toLowerCase().includes(q)) : coupons;
+  if(list.length === 0){
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><p>No coupons yet</p>Click "+ Add Coupon" to create one</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(c => `
+    <tr>
+      <td style="font-weight:700; letter-spacing:0.04em;">${escapeHtml(c.code)}</td>
+      <td class="prod-cat">${c.type === 'percent' ? 'Percentage' : c.type === 'flat' ? 'Flat Amount' : 'Free Delivery'}</td>
+      <td>${couponValueLabel(c)}</td>
+      <td>${c.minOrder ? fmt(c.minOrder) : 'â€”'}</td>
+      <td>${c.active !== false ? '<span class="badge bestseller">Active</span>' : '<span class="badge none">Inactive</span>'}</td>
+      <td><div class="row-actions"><button class="icon-btn" title="Edit" onclick="openCouponModal('${c.code}')">âœŽ</button><button class="icon-btn danger" title="Delete" onclick="confirmDeleteCoupon('${c.code}')">ðŸ—‘</button></div></td>
+    </tr>
+  `).join('');
+}
+document.getElementById('couponSearch').addEventListener('input', (e) => renderCouponsTable(e.target.value));
+
+const couponModalOverlay = document.getElementById('couponModalOverlay');
+let editingCouponCode = null;
+function openCouponModal(code=null){
+  editingCouponCode = code;
+  document.getElementById('couponForm').reset();
+  if(code){
+    const c = coupons.find(x => x.code === code);
+    document.getElementById('couponModalTitle').textContent = 'Edit Coupon';
+    document.getElementById('cfOriginalCode').value = c.code;
+    document.getElementById('cfCode').value = c.code;
+    document.getElementById('cfType').value = c.type;
+    document.getElementById('cfValue').value = c.value;
+    document.getElementById('cfMinOrder').value = c.minOrder || '';
+    document.getElementById('cfActive').checked = c.active !== false;
+  }else{
+    document.getElementById('couponModalTitle').textContent = 'Add Coupon';
+    document.getElementById('cfOriginalCode').value = '';
+    document.getElementById('cfActive').checked = true;
+  }
+  toggleCfValueVisibility();
+  couponModalOverlay.classList.add('open');
+}
+function closeCouponModal(){ couponModalOverlay.classList.remove('open'); editingCouponCode = null; }
+function toggleCfValueVisibility(){
+  const type = document.getElementById('cfType').value;
+  document.getElementById('cfValueRow').style.display = type === 'freeship' ? 'none' : 'block';
+}
+document.getElementById('cfType').addEventListener('change', toggleCfValueVisibility);
+document.getElementById('addCouponBtn').addEventListener('click', () => openCouponModal());
+document.getElementById('couponModalClose').addEventListener('click', closeCouponModal);
+document.getElementById('couponCancelBtn').addEventListener('click', closeCouponModal);
+couponModalOverlay.addEventListener('click', (e) => { if(e.target === couponModalOverlay) closeCouponModal(); });
+
+document.getElementById('couponSaveBtn').addEventListener('click', async () => {
+  const code = document.getElementById('cfCode').value.trim().toUpperCase();
+  const type = document.getElementById('cfType').value;
+  const value = type === 'freeship' ? 0 : parseFloat(document.getElementById('cfValue').value) || 0;
+  const minOrder = parseFloat(document.getElementById('cfMinOrder').value) || 0;
+  const active = document.getElementById('cfActive').checked;
+  const originalCode = document.getElementById('cfOriginalCode').value;
+
+  if(!code){ showToast('Please enter a coupon code'); return; }
+  const duplicate = coupons.find(c => c.code === code && c.code !== originalCode);
+  if(duplicate){ showToast('A coupon with this code already exists'); return; }
+
+  const savedCoupon = { code, type, value, minOrder, active };
+  try{
+    await apiPost('saveCoupon', savedCoupon);
+    await loadCloudState();
+    showToast(originalCode ? 'Coupon updated everywhere' : 'Coupon added everywhere');
+    closeCouponModal();
+  }catch(err){
+    console.error(err);
+    showToast('Could not save coupon to Google Sheets');
+  }
+});
+function confirmDeleteCoupon(code){
+  pendingDelete = { type:'coupon', id: code };
+  document.getElementById('confirmMessage').textContent = `Delete coupon "${code}"? This cannot be undone.`;
+  confirmOverlay.classList.add('open');
+}
+
+/* =========================================================
+   ORDERS
+   ========================================================= */
+let orders = [];
+
+function statusPill(status){ const s = status || 'pending'; return `<span class="status-pill ${s}">${s}</span>`; }
+
+function renderOrdersTable(filter=''){
+  const tbody = document.getElementById('ordersBody');
+  const q = filter.trim().toLowerCase();
+  let list = [...orders].reverse();
+  if(q){
+    list = list.filter(o => (o.name||'').toLowerCase().includes(q) || (o.phone||'').toLowerCase().includes(q) || (o.orderId||'').toLowerCase().includes(q));
+  }
+  if(list.length === 0){
+    tbody.innerHTML = `<tr><td colspan="10"><div class="empty-state"><p>No orders yet</p>Orders placed on your website will appear here automatically</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(o => `
+    <tr>
+      <td style="font-weight:600;">#${o.orderId}</td>
+      <td>${new Date(o.timestamp).toLocaleDateString('en-PK', {day:'numeric', month:'short'})}</td>
+      <td>${escapeHtml(o.name||'â€”')}</td>
+      <td>${escapeHtml(o.phone||'â€”')}</td>
+      <td>${escapeHtml(o.city||'â€”')}</td>
+      <td>${o.itemsDetailed ? o.itemsDetailed.reduce((a,i)=>a+i.qty,0) : 'â€”'}</td>
+      <td>${o.couponCode ? `<span class="badge bestseller">${o.couponCode}</span>` : 'â€”'}</td>
+      <td style="font-weight:600;">${fmt(o.total)}</td>
+      <td>
+        <select class="status-select" onchange="updateOrderStatus('${o.orderId}', this.value)">
+          <option value="pending" ${(!o.status || o.status==='pending') ? 'selected':''}>Pending</option>
+          <option value="confirmed" ${o.status==='confirmed' ? 'selected':''}>Confirmed</option>
+          <option value="delivered" ${o.status==='delivered' ? 'selected':''}>Delivered</option>
+          <option value="cancelled" ${o.status==='cancelled' ? 'selected':''}>Cancelled</option>
+        </select>
+      </td>
+      <td><button class="icon-btn" title="View details" onclick="viewOrderDetail('${o.orderId}')">ðŸ‘</button></td>
+    </tr>
+  `).join('');
+}
+async function updateOrderStatus(orderId, status){
+  try{
+    await apiPost('updateOrderStatus', {orderId, status});
+    await loadCloudState();
+    showToast('Order status updated everywhere');
+  }catch(err){ console.error(err); showToast('Could not update order'); }
+}
+document.getElementById('orderSearch').addEventListener('input', (e) => renderOrdersTable(e.target.value));
+document.getElementById('refreshOrdersBtn').addEventListener('click', async () => {
+  try{ await loadCloudState(); showToast('All data refreshed'); }
+  catch(err){ console.error(err); showToast('Could not refresh from server'); }
+});
+
+const orderModalOverlay = document.getElementById('orderModalOverlay');
+function viewOrderDetail(orderId){
+  const o = orders.find(x => x.orderId === orderId);
+  if(!o) return;
+  const itemsHtml = (o.itemsDetailed||[]).map(i => `<div class="od-row"><span class="k">${escapeHtml(i.name)} (${escapeHtml(i.size||'')}) Ã— ${i.qty}</span><span class="v">${fmt(i.price * i.qty)}</span></div>`).join('');
+  document.getElementById('orderDetailBody').innerHTML = `
+    <div class="od-section">
+      <div class="od-label">Order</div>
+      <div class="od-row"><span class="k">Order ID</span><span class="v">#${o.orderId}</span></div>
+      <div class="od-row"><span class="k">Placed</span><span class="v">${new Date(o.timestamp).toLocaleString('en-PK', {dateStyle:'medium', timeStyle:'short'})}</span></div>
+      <div class="od-row"><span class="k">Status</span><span class="v">${statusPill(o.status)}</span></div>
+    </div>
+    <div class="od-section">
+      <div class="od-label">Items</div>
+      ${itemsHtml}
+      <div class="od-row"><span class="k">Items Subtotal</span><span class="v">${fmt(o.itemsSubtotal)}</span></div>
+      ${o.discount ? `<div class="od-row"><span class="k">Discount (${o.couponCode||''})</span><span class="v" style="color:var(--success);">âˆ’ ${fmt(o.discount)}</span></div>` : ''}
+      <div class="od-row"><span class="k">Delivery Charge</span><span class="v">${fmt(o.deliveryCharge)}</span></div>
+      <div class="od-row"><span class="k">Total (COD)</span><span class="v">${fmt(o.total)}</span></div>
+    </div>
+    <div class="od-section">
+      <div class="od-label">Customer</div>
+      <div class="od-row"><span class="k">Name</span><span class="v">${escapeHtml(o.name||'â€”')}</span></div>
+      <div class="od-row"><span class="k">Phone</span><span class="v">${escapeHtml(o.phone||'â€”')}</span></div>
+      <div class="od-row"><span class="k">Email</span><span class="v">${escapeHtml(o.email||'â€”')}</span></div>
+      <div class="od-row"><span class="k">Address</span><span class="v">${escapeHtml(o.address||'â€”')}${o.area ? ', '+escapeHtml(o.area) : ''}</span></div>
+      <div class="od-row"><span class="k">City</span><span class="v">${escapeHtml(o.city||'â€”')}</span></div>
+      ${o.notes ? `<div class="od-row"><span class="k">Notes</span><span class="v">${escapeHtml(o.notes)}</span></div>` : ''}
+      ${(o.lat && o.lng) ? `
+        <div class="od-map-wrap"><iframe class="od-map" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.openstreetmap.org/export/embed.html?bbox=${o.lng-0.006},${o.lat-0.006},${o.lng+0.006},${o.lat+0.006}&layer=mapnik&marker=${o.lat},${o.lng}"></iframe></div>
+        <a href="https://maps.google.com/?q=${o.lat},${o.lng}" target="_blank" class="od-map-link">Open in Google Maps â†—</a>
+      ` : `<div class="od-row"><span class="k">Location</span><span class="v" style="color:#a09c92;">Not shared</span></div>`}
+    </div>
+  `;
+  orderModalOverlay.classList.add('open');
+}
+document.getElementById('orderModalClose').addEventListener('click', () => orderModalOverlay.classList.remove('open'));
+document.getElementById('orderDetailCloseBtn').addEventListener('click', () => orderModalOverlay.classList.remove('open'));
+orderModalOverlay.addEventListener('click', (e) => { if(e.target === orderModalOverlay) orderModalOverlay.classList.remove('open'); });
+
+/* =========================================================
+   NEWSLETTER
+   ========================================================= */
+let subscribers = [];
+function renderNewsletter(){
+  const list = Array.isArray(subscribers) ? subscribers : [];
+  document.getElementById('subscriberCount').textContent = list.length;
+  const wrap = document.getElementById('subscriberList');
+  if(list.length === 0){
+    wrap.innerHTML = `<div class="empty-state"><p>No subscribers yet</p>Emails collected from your website's newsletter form will appear here</div>`;
+    return;
+  }
+  wrap.innerHTML = list.map(email => `<div class="subscriber-row">${escapeHtml(email)}</div>`).join('');
+}
+document.getElementById('copyEmailsBtn').addEventListener('click', () => {
+  const list = Array.isArray(subscribers) ? subscribers : [];
+  if(list.length === 0){ showToast('No subscribers to copy'); return; }
+  navigator.clipboard.writeText(list.join(', ')).then(() => showToast('Emails copied to clipboard')).catch(() => showToast('Could not copy â€” please select manually'));
+});
+
+/* =========================================================
+   OVERVIEW
+   ========================================================= */
+function renderOverview(){
+  document.getElementById('statOrders').textContent = orders.length;
+  document.getElementById('statPending').textContent = orders.filter(o => !o.status || o.status === 'pending').length;
+  const revenue = orders.reduce((sum,o) => sum + (o.total||0), 0);
+  document.getElementById('statRevenue').textContent = fmt(revenue);
+
+  const recent = [...orders].reverse().slice(0, 6);
+  const tbody = document.getElementById('recentOrdersBody');
+  if(recent.length === 0){
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><p>No orders yet</p>New orders from your website will show up here</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = recent.map(o => `
+    <tr>
+      <td style="font-weight:600;">#${o.orderId}</td>
+      <td>${escapeHtml(o.name||'â€”')}</td>
+      <td>${o.itemsDetailed ? o.itemsDetailed.reduce((a,i)=>a+i.qty,0) : 'â€”'}</td>
+      <td style="font-weight:600;">${fmt(o.total)}</td>
+      <td>${statusPill(o.status)}</td>
+    </tr>
+  `).join('');
+}
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+let toastTimer;
+function showToast(msg){
+  const toast = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+/* =========================================================
+   INIT
+   ========================================================= */
+async function refreshAll(){
+  renderProductsTable(); renderOrdersTable(); renderCouponsTable(); renderNewsletter(); renderOverview();
+  try{ await loadCloudState(); }
+  catch(err){ console.error(err); showToast('Supabase connection failed â€” check your URL/key and RLS policies'); }
+}
+
+/* Check login session LAST â€” only after every variable, function, and
+   event listener above is fully set up, to avoid a crash for already
+   logged-in users on page refresh (products/orders/coupons referenced
+   before their own declarations had run). */
+checkSession();
+</script>
+</body>
+</html>
