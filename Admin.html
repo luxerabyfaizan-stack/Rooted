@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin â€” ROOTED</title>
+<title>Admin — ROOTED</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -213,11 +213,11 @@ tbody tr:hover{background:var(--sand);}
       </div>
       <div class="login-field">
         <label for="loginPass">Password</label>
-        <input type="password" id="loginPass" autocomplete="current-password" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢">
+        <input type="password" id="loginPass" autocomplete="current-password" placeholder="••••••••">
       </div>
       <button type="submit" class="login-btn">Sign In</button>
     </form>
-    <p class="login-hint">Default login â€” username: <strong>admin</strong>, password: <strong>rooted2026</strong><br>Change these in the script section of this file.</p>
+    <p class="login-hint">Default login — username: <strong>admin</strong>, password: <strong>rooted2026</strong><br>Change these in the script section of this file.</p>
   </div>
 </div>
 
@@ -330,7 +330,7 @@ tbody tr:hover{background:var(--sand);}
             <p class="form-hint">Example: 25 means customers get 25% off every product.</p>
           </div>
           <div style="padding:16px; background:var(--sand); border:1px solid var(--line-soft); margin:20px 0; font-size:13px; line-height:1.6;">
-            <strong>Preview:</strong> Rs 2,999 â†’ <span id="salePreviewPrice">Rs 2,999</span>
+            <strong>Preview:</strong> Rs 2,999 → <span id="salePreviewPrice">Rs 2,999</span>
           </div>
           <button type="button" class="btn-gold" id="saveSaleBtn">Save Sale Settings</button>
           <p class="photo-upload-status" id="saleStatus"></p>
@@ -342,7 +342,7 @@ tbody tr:hover{background:var(--sand);}
         <div class="main-head"><div><h1 class="main-title">Settings</h1><p class="main-sub">Site-wide images and details</p></div></div>
         <div class="settings-card">
           <h3>Hero Image</h3>
-          <p class="settings-hint">Upload your own bottle/product photo to replace the default illustration on your homepage. Uploads the same way as product photos â€” visible to every customer, on any device.</p>
+          <p class="settings-hint">Upload your own bottle/product photo to replace the default illustration on your homepage. Uploads the same way as product photos — visible to every customer, on any device.</p>
           <div class="photo-upload-box" style="max-width:340px;">
             <div class="photo-preview" id="heroPhotoPreview" style="aspect-ratio:4/5; max-width:220px;">
               <span id="heroPhotoPlaceholder">Using default illustration</span>
@@ -445,7 +445,7 @@ tbody tr:hover{background:var(--sand);}
         </div>
         <div class="form-grid-2">
           <div class="form-row"><label for="pfPrice">Price (Rs)</label><input type="number" id="pfPrice" placeholder="2999" min="0"></div>
-          <div class="form-row"><label for="pfOldPrice">Old Price â€” optional (Rs)</label><input type="number" id="pfOldPrice" placeholder="3999" min="0"></div>
+          <div class="form-row"><label for="pfOldPrice">Old Price — optional (Rs)</label><input type="number" id="pfOldPrice" placeholder="3999" min="0"></div>
         </div>
         <div class="form-row">
           <label for="pfTag">Tag (optional)</label>
@@ -467,7 +467,7 @@ tbody tr:hover{background:var(--sand);}
             <p class="photo-upload-status" id="photoUploadStatus"></p>
           </div>
           <input type="hidden" id="pfImg">
-          <p class="form-hint">Photo uploads to free image hosting and gets a real web link â€” visible to every customer, on any device.</p>
+          <p class="form-hint">Photo uploads to free image hosting and gets a real web link — visible to every customer, on any device.</p>
         </div>
         <div class="form-row"><label for="pfDesc">Short Description</label><textarea id="pfDesc" placeholder="One short line shown on the product card" style="min-height:56px;"></textarea></div>
         <div class="form-row"><label for="pfFullDesc">Full Description</label><textarea id="pfFullDesc" placeholder="Longer description shown on the product page"></textarea></div>
@@ -537,7 +537,7 @@ tbody tr:hover{background:var(--sand);}
 
 <script>
 /* =========================================================
-   ADMIN CREDENTIALS â€” change these to your own
+   ADMIN CREDENTIALS — change these to your own
    ========================================================= */
 const ADMIN_CREDENTIALS = {
   username: "admin",
@@ -545,7 +545,7 @@ const ADMIN_CREDENTIALS = {
 };
 
 /* =========================================================
-   IMAGE HOSTING (ImgBB) â€” required for product photo uploads
+   IMAGE HOSTING (ImgBB) — required for product photo uploads
    Get a free API key at https://api.imgbb.com/ and paste it below.
    ========================================================= */
 const IMGBB_API_KEY = "PASTE_YOUR_IMGBB_API_KEY_HERE";
@@ -555,7 +555,7 @@ const IMGBB_API_KEY = "PASTE_YOUR_IMGBB_API_KEY_HERE";
    Paste your Supabase Project URL + anon/publishable key below.
    The rest of the dashboard keeps the same UI/actions.
    ========================================================= */
-const SUPABASE_URL = "https://jccszipeywcasoinsoaa.supabase.co/rest/v1/";
+const SUPABASE_URL = "https://jccszipeywcasoinsoaa.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_gTqJG1B6qodqnoFDICohjw_HOE6sBAX";
 
 function supabaseHeaders(extra={}){
@@ -596,6 +596,28 @@ async function apiGet(){
     newsletter:(subscriberRows||[]).map(r=>r.email), settings
   };
 }
+async function loadCloudState(){
+  const data = await apiGet();
+  products = Array.isArray(data.products) ? data.products : [];
+  coupons = Array.isArray(data.coupons) ? data.coupons : [];
+  orders = Array.isArray(data.orders) ? data.orders : [];
+  subscribers = Array.isArray(data.newsletter) ? data.newsletter : [];
+  saleSettings = (data.settings && data.settings.sale && typeof data.settings.sale === 'object')
+    ? { active: !!data.settings.sale.active, percentage: Number(data.settings.sale.percentage || 0) }
+    : { active: false, percentage: 0 };
+  renderProductsTable(document.getElementById('productSearch')?.value || '');
+  renderCouponsTable(document.getElementById('couponSearch')?.value || '');
+  renderOrdersTable(document.getElementById('orderSearch')?.value || '');
+  renderNewsletter();
+  renderOverview();
+  renderSaleSettings();
+  if(data.settings){
+    setHeroPreview(data.settings.heroImage || '');
+    setBeforeAfterPreview(data.settings.beforeImage || '', data.settings.afterImage || '');
+  }
+  return data;
+}
+
 async function apiPost(action,data){
   if(action==='createOrder'){
     const result=await sbFetch('/rest/v1/rpc/create_rooted_order',{method:'POST',body:JSON.stringify({p_data:data})});
@@ -617,12 +639,12 @@ async function apiPost(action,data){
    DEFAULTS (mirrors index.html)
    ========================================================= */
 const DEFAULT_PRODUCTS = [
-  { id:"o1", name:"Signature Botanical Hair Oil", size:"100ml", category:"oils", price:2999, oldPrice:3999, tag:"Bestseller", img:"assets/product-signature.jpg", desc:"Our original six-botanical blend for everyday scalp nourishment.", fullDesc:"The oil that started it all. A featherlight blend of six traditional botanicals, cold-pressed and hand-mixed in small batches.", ingredients:"Cold-Pressed Castor Oil, Bhringraj Extract, Amla, Rosemary Essential Oil, Black Seed Oil (Kalonji), Argan Oil.", directions:"Apply 4â€“6 drops to the scalp. Massage 5â€“10 minutes. Leave in 1â€“2 hours or overnight, then rinse. Use 2â€“3 times a week.", caution:"For external use only. Patch test before first use. Keep out of reach of children." },
+  { id:"o1", name:"Signature Botanical Hair Oil", size:"100ml", category:"oils", price:2999, oldPrice:3999, tag:"Bestseller", img:"assets/product-signature.jpg", desc:"Our original six-botanical blend for everyday scalp nourishment.", fullDesc:"The oil that started it all. A featherlight blend of six traditional botanicals, cold-pressed and hand-mixed in small batches.", ingredients:"Cold-Pressed Castor Oil, Bhringraj Extract, Amla, Rosemary Essential Oil, Black Seed Oil (Kalonji), Argan Oil.", directions:"Apply 4–6 drops to the scalp. Massage 5–10 minutes. Leave in 1–2 hours or overnight, then rinse. Use 2–3 times a week.", caution:"For external use only. Patch test before first use. Keep out of reach of children." },
   { id:"o2", name:"Scalp Detox Pre-Wash Oil", size:"100ml", category:"oils", price:2499, oldPrice:null, tag:"New", img:"assets/product-detox.jpg", desc:"A clarifying pre-shampoo treatment for a fresher-feeling scalp.", fullDesc:"A slightly warming blend meant to sit on the scalp before wash day.", ingredients:"Castor Oil, Rosemary Essential Oil, Black Seed Oil, Tea Tree Extract, Argan Oil.", directions:"Apply before shampooing, massage 5 minutes, rinse thoroughly.", caution:"Patch test recommended. Avoid contact with eyes." },
   { id:"o3", name:"Overnight Repair Elixir", size:"50ml", category:"oils", price:2799, oldPrice:null, tag:null, img:"assets/product-overnight.jpg", desc:"A richer night-time blend for concentrated overnight nourishment.", fullDesc:"A heavier formulation for deeper overnight treatment once or twice a week.", ingredients:"Castor Oil, Argan Oil, Amla Extract, Bhringraj Extract.", directions:"Apply before bed, cover hair, wash out in the morning.", caution:"Patch test before first use. Keep out of reach of children." },
-  { id:"m1", name:"Travel Size Botanical Oil", size:"30ml", category:"minis", price:1199, oldPrice:null, tag:null, img:"assets/product-travel.jpg", desc:"Our Signature blend in a bag-friendly size.", fullDesc:"The same six-botanical Signature formula, bottled smaller for travel.", ingredients:"Cold-Pressed Castor Oil, Bhringraj Extract, Amla, Rosemary Essential Oil, Black Seed Oil, Argan Oil.", directions:"Apply 3â€“4 drops, massage, leave in, then rinse. Use 2â€“3 times weekly.", caution:"Patch test recommended before first use." },
-  { id:"m2", name:"Rosemary Boost Add-on", size:"30ml", category:"minis", price:1499, oldPrice:null, tag:null, img:"assets/product-rosemary.jpg", desc:"A concentrated rosemary drop-in to boost any oil blend.", fullDesc:"A few drops added to your regular oil for an extra herbaceous lift.", ingredients:"Rosemary Essential Oil, Jojoba Oil, Vitamin E.", directions:"Add 2â€“3 drops to your regular hair oil, or apply directly before massage.", caution:"Concentrated blend â€” patch test essential. Not recommended during pregnancy without consulting a doctor." },
-  { id:"g1", name:"Ritual Gift Set", size:"Oil + Comb + Pouch", category:"gifts", price:4999, oldPrice:5999, tag:"Bestseller", img:"assets/product-giftset.jpg", desc:"Signature Oil, a wooden scalp comb, and a linen pouch â€” ready to gift.", fullDesc:"Everything needed to start the ritual, packaged for gifting.", ingredients:"Includes Signature Botanical Hair Oil â€” see its full ingredient list.", directions:"Use the wooden comb dry or with oil applied, in gentle upward strokes.", caution:"Patch test the oil before first use. Wooden comb is not dishwasher safe." },
+  { id:"m1", name:"Travel Size Botanical Oil", size:"30ml", category:"minis", price:1199, oldPrice:null, tag:null, img:"assets/product-travel.jpg", desc:"Our Signature blend in a bag-friendly size.", fullDesc:"The same six-botanical Signature formula, bottled smaller for travel.", ingredients:"Cold-Pressed Castor Oil, Bhringraj Extract, Amla, Rosemary Essential Oil, Black Seed Oil, Argan Oil.", directions:"Apply 3–4 drops, massage, leave in, then rinse. Use 2–3 times weekly.", caution:"Patch test recommended before first use." },
+  { id:"m2", name:"Rosemary Boost Add-on", size:"30ml", category:"minis", price:1499, oldPrice:null, tag:null, img:"assets/product-rosemary.jpg", desc:"A concentrated rosemary drop-in to boost any oil blend.", fullDesc:"A few drops added to your regular oil for an extra herbaceous lift.", ingredients:"Rosemary Essential Oil, Jojoba Oil, Vitamin E.", directions:"Add 2–3 drops to your regular hair oil, or apply directly before massage.", caution:"Concentrated blend — patch test essential. Not recommended during pregnancy without consulting a doctor." },
+  { id:"g1", name:"Ritual Gift Set", size:"Oil + Comb + Pouch", category:"gifts", price:4999, oldPrice:5999, tag:"Bestseller", img:"assets/product-giftset.jpg", desc:"Signature Oil, a wooden scalp comb, and a linen pouch — ready to gift.", fullDesc:"Everything needed to start the ritual, packaged for gifting.", ingredients:"Includes Signature Botanical Hair Oil — see its full ingredient list.", directions:"Use the wooden comb dry or with oil applied, in gentle upward strokes.", caution:"Patch test the oil before first use. Wooden comb is not dishwasher safe." },
 ];
 const DEFAULT_COUPONS = [
   { code:"WELCOME10", type:"percent", value:10, minOrder:0, active:true },
@@ -751,7 +773,7 @@ document.getElementById('saveSaleBtn').addEventListener('click',async()=>{
     saleSettings={active,percentage}; renderSaleSettings();
     status.textContent=active ? `Sale is LIVE at ${percentage}% off.` : 'Sale is OFF.';
     status.className='photo-upload-status success';
-    showToast(active ? `Sale live â€” ${percentage}% off` : 'Sale turned off');
+    showToast(active ? `Sale live — ${percentage}% off` : 'Sale turned off');
   }catch(err){ console.error(err); status.textContent='Could not save sale settings to Supabase.'; status.className='photo-upload-status error'; }
 });
 
@@ -775,8 +797,8 @@ function renderProductsTable(filter=''){
       <td><div class="prod-cell"><div class="prod-thumb"><img src="${p.img}" alt="" onerror="this.style.display='none'"></div><div><div class="prod-name">${escapeHtml(p.name)}</div><div class="prod-cat">${p.size || ''}</div></div></div></td>
       <td class="prod-cat">${p.category}</td>
       <td>${p.oldPrice ? `<span style="text-decoration:line-through; color:#a09c92; margin-right:6px;">${fmt(p.oldPrice)}</span>` : ''}${fmt(p.price)}</td>
-      <td>${p.tag ? `<span class="badge ${p.tag.toLowerCase()}">${p.tag}</span>` : `<span class="badge none">â€”</span>`}</td>
-      <td><div class="row-actions"><button class="icon-btn" title="Edit" onclick="openProductModal('${p.id}')">âœŽ</button><button class="icon-btn danger" title="Delete" onclick="confirmDeleteProduct('${p.id}')">ðŸ—‘</button></div></td>
+      <td>${p.tag ? `<span class="badge ${p.tag.toLowerCase()}">${p.tag}</span>` : `<span class="badge none">—</span>`}</td>
+      <td><div class="row-actions"><button class="icon-btn" title="Edit" onclick="openProductModal('${p.id}')">✎</button><button class="icon-btn danger" title="Delete" onclick="confirmDeleteProduct('${p.id}')">🗑</button></div></td>
     </tr>
   `).join('');
 }
@@ -836,7 +858,7 @@ document.getElementById('pfImgFile').addEventListener('change', async (e) => {
     e.target.value = '';
     return;
   }
-  if(file.size > 10 * 1024 * 1024){ showToast('Photo is too large â€” please choose one under 10MB'); e.target.value = ''; return; }
+  if(file.size > 10 * 1024 * 1024){ showToast('Photo is too large — please choose one under 10MB'); e.target.value = ''; return; }
 
   const overlay = document.getElementById('photoUploadingOverlay');
   const status = document.getElementById('photoUploadStatus');
@@ -858,7 +880,7 @@ document.getElementById('pfImgFile').addEventListener('change', async (e) => {
     if(result.success){
       document.getElementById('pfImg').value = result.data.url;
       setPhotoPreview(result.data.url);
-      status.textContent = 'Uploaded â€” visible to all customers';
+      status.textContent = 'Uploaded — visible to all customers';
       status.className = 'photo-upload-status success';
     }else{
       throw new Error(result.error?.message || 'Upload failed');
@@ -878,7 +900,7 @@ document.getElementById('photoRemoveBtn').addEventListener('click', () => {
 });
 
 /* =========================================================
-   SETTINGS â€” Hero Image (uploads via ImgBB, same as product photos)
+   SETTINGS — Hero Image (uploads via ImgBB, same as product photos)
    ========================================================= */
 function setHeroPreview(src){
   const img = document.getElementById('heroPhotoImg');
@@ -899,7 +921,7 @@ document.getElementById('heroImgFile').addEventListener('change', async (e) => {
     e.target.value = '';
     return;
   }
-  if(file.size > 10 * 1024 * 1024){ showToast('Photo is too large â€” please choose one under 10MB'); e.target.value = ''; return; }
+  if(file.size > 10 * 1024 * 1024){ showToast('Photo is too large — please choose one under 10MB'); e.target.value = ''; return; }
 
   const overlay = document.getElementById('heroUploadingOverlay');
   const status = document.getElementById('heroUploadStatus');
@@ -921,7 +943,7 @@ document.getElementById('heroImgFile').addEventListener('change', async (e) => {
     if(result.success){
       await apiPost('saveSetting', {key:'heroImage', value:result.data.url});
       setHeroPreview(result.data.url);
-      status.textContent = 'Uploaded â€” this now shows on your homepage for every visitor';
+      status.textContent = 'Uploaded — this now shows on your homepage for every visitor';
       status.className = 'photo-upload-status success';
     }else{
       throw new Error(result.error?.message || 'Upload failed');
@@ -940,11 +962,11 @@ document.getElementById('heroRemoveBtn').addEventListener('click', async () => {
   document.getElementById('heroUploadStatus').textContent = '';
   document.getElementById('heroUploadStatus').className = 'photo-upload-status';
   setHeroPreview('');
-  showToast('Removed â€” homepage will show the default illustration again');
+  showToast('Removed — homepage will show the default illustration again');
 });
 
 /* =========================================================
-   SETTINGS â€” Before / After slider images
+   SETTINGS — Before / After slider images
    ========================================================= */
 function setBeforeAfterPreview(beforeUrl, afterUrl){
   const pairs=[
@@ -970,7 +992,7 @@ async function uploadBeforeAfterImage(which, file){
   const inputId=which==='before'?'beforeImgFile':'afterImgFile';
   const status=document.getElementById(statusId), overlay=document.getElementById(overlayId), choose=document.getElementById(chooseId);
   if(!IMGBB_API_KEY || IMGBB_API_KEY === 'PASTE_YOUR_IMGBB_API_KEY_HERE'){ status.textContent='Image hosting is not set up yet. Add your ImgBB API key first.'; status.className='photo-upload-status error'; document.getElementById(inputId).value=''; return; }
-  if(file.size>10*1024*1024){ showToast('Photo is too large â€” please choose one under 10MB'); document.getElementById(inputId).value=''; return; }
+  if(file.size>10*1024*1024){ showToast('Photo is too large — please choose one under 10MB'); document.getElementById(inputId).value=''; return; }
   overlay.style.display='flex'; status.textContent=''; status.className='photo-upload-status'; choose.style.pointerEvents='none'; choose.style.opacity='.6';
   try{
     const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result.split(',')[1]);reader.onerror=reject;reader.readAsDataURL(file);});
@@ -981,7 +1003,7 @@ async function uploadBeforeAfterImage(which, file){
     await apiPost('saveSetting',{key,value:result.data.url});
     const img=document.getElementById(imgId); img.src=result.data.url; img.style.display='block';
     document.getElementById(phId).style.display='none'; document.getElementById(rmId).style.display='inline-block';
-    status.textContent='Uploaded â€” visible to every customer on every device'; status.className='photo-upload-status success';
+    status.textContent='Uploaded — visible to every customer on every device'; status.className='photo-upload-status success';
   }catch(err){ console.error(err); status.textContent='Upload failed. Please check your internet connection and try again.'; status.className='photo-upload-status error'; }
   finally{ overlay.style.display='none'; choose.style.pointerEvents=''; choose.style.opacity=''; document.getElementById(inputId).value=''; }
 }
@@ -1022,7 +1044,7 @@ document.getElementById('productSaveBtn').addEventListener('click', async () => 
   let savedProduct;
   if(wasEditing){
     const idx = products.findIndex(p => p.id === editingProductId);
-    if(idx < 0){ showToast('Product not found â€” refresh and try again'); return; }
+    if(idx < 0){ showToast('Product not found — refresh and try again'); return; }
     savedProduct = { ...products[idx], name, size, category, tag, price, oldPrice, img, desc, fullDesc, ingredients, directions, caution };
   }else{
     savedProduct = { id:genProductId(category), name, size, category, tag, price, oldPrice, img, desc, fullDesc, ingredients, directions, caution };
@@ -1036,7 +1058,7 @@ document.getElementById('productSaveBtn').addEventListener('click', async () => 
     closeProductModal();
   }catch(err){
     console.error(err);
-    showToast('Could not save product to Google Sheets');
+    showToast('Could not save product to Supabase');
   }finally{ saveBtn.disabled = false; }
 });
 
@@ -1076,7 +1098,7 @@ let coupons = [];
 function couponValueLabel(c){
   if(c.type === 'percent') return c.value + '%';
   if(c.type === 'flat') return fmt(c.value);
-  if(c.type === 'freeship') return 'â€”';
+  if(c.type === 'freeship') return '—';
   return '';
 }
 function renderCouponsTable(filter=''){
@@ -1092,9 +1114,9 @@ function renderCouponsTable(filter=''){
       <td style="font-weight:700; letter-spacing:0.04em;">${escapeHtml(c.code)}</td>
       <td class="prod-cat">${c.type === 'percent' ? 'Percentage' : c.type === 'flat' ? 'Flat Amount' : 'Free Delivery'}</td>
       <td>${couponValueLabel(c)}</td>
-      <td>${c.minOrder ? fmt(c.minOrder) : 'â€”'}</td>
+      <td>${c.minOrder ? fmt(c.minOrder) : '—'}</td>
       <td>${c.active !== false ? '<span class="badge bestseller">Active</span>' : '<span class="badge none">Inactive</span>'}</td>
-      <td><div class="row-actions"><button class="icon-btn" title="Edit" onclick="openCouponModal('${c.code}')">âœŽ</button><button class="icon-btn danger" title="Delete" onclick="confirmDeleteCoupon('${c.code}')">ðŸ—‘</button></div></td>
+      <td><div class="row-actions"><button class="icon-btn" title="Edit" onclick="openCouponModal('${c.code}')">✎</button><button class="icon-btn danger" title="Delete" onclick="confirmDeleteCoupon('${c.code}')">🗑</button></div></td>
     </tr>
   `).join('');
 }
@@ -1153,7 +1175,7 @@ document.getElementById('couponSaveBtn').addEventListener('click', async () => {
     closeCouponModal();
   }catch(err){
     console.error(err);
-    showToast('Could not save coupon to Google Sheets');
+    showToast('Could not save coupon to Supabase');
   }
 });
 function confirmDeleteCoupon(code){
@@ -1184,11 +1206,11 @@ function renderOrdersTable(filter=''){
     <tr>
       <td style="font-weight:600;">#${o.orderId}</td>
       <td>${new Date(o.timestamp).toLocaleDateString('en-PK', {day:'numeric', month:'short'})}</td>
-      <td>${escapeHtml(o.name||'â€”')}</td>
-      <td>${escapeHtml(o.phone||'â€”')}</td>
-      <td>${escapeHtml(o.city||'â€”')}</td>
-      <td>${o.itemsDetailed ? o.itemsDetailed.reduce((a,i)=>a+i.qty,0) : 'â€”'}</td>
-      <td>${o.couponCode ? `<span class="badge bestseller">${o.couponCode}</span>` : 'â€”'}</td>
+      <td>${escapeHtml(o.name||'—')}</td>
+      <td>${escapeHtml(o.phone||'—')}</td>
+      <td>${escapeHtml(o.city||'—')}</td>
+      <td>${o.itemsDetailed ? o.itemsDetailed.reduce((a,i)=>a+i.qty,0) : '—'}</td>
+      <td>${o.couponCode ? `<span class="badge bestseller">${o.couponCode}</span>` : '—'}</td>
       <td style="font-weight:600;">${fmt(o.total)}</td>
       <td>
         <select class="status-select" onchange="updateOrderStatus('${o.orderId}', this.value)">
@@ -1198,7 +1220,7 @@ function renderOrdersTable(filter=''){
           <option value="cancelled" ${o.status==='cancelled' ? 'selected':''}>Cancelled</option>
         </select>
       </td>
-      <td><button class="icon-btn" title="View details" onclick="viewOrderDetail('${o.orderId}')">ðŸ‘</button></td>
+      <td><button class="icon-btn" title="View details" onclick="viewOrderDetail('${o.orderId}')">👁</button></td>
     </tr>
   `).join('');
 }
@@ -1219,7 +1241,7 @@ const orderModalOverlay = document.getElementById('orderModalOverlay');
 function viewOrderDetail(orderId){
   const o = orders.find(x => x.orderId === orderId);
   if(!o) return;
-  const itemsHtml = (o.itemsDetailed||[]).map(i => `<div class="od-row"><span class="k">${escapeHtml(i.name)} (${escapeHtml(i.size||'')}) Ã— ${i.qty}</span><span class="v">${fmt(i.price * i.qty)}</span></div>`).join('');
+  const itemsHtml = (o.itemsDetailed||[]).map(i => `<div class="od-row"><span class="k">${escapeHtml(i.name)} (${escapeHtml(i.size||'')}) × ${i.qty}</span><span class="v">${fmt(i.price * i.qty)}</span></div>`).join('');
   document.getElementById('orderDetailBody').innerHTML = `
     <div class="od-section">
       <div class="od-label">Order</div>
@@ -1231,21 +1253,21 @@ function viewOrderDetail(orderId){
       <div class="od-label">Items</div>
       ${itemsHtml}
       <div class="od-row"><span class="k">Items Subtotal</span><span class="v">${fmt(o.itemsSubtotal)}</span></div>
-      ${o.discount ? `<div class="od-row"><span class="k">Discount (${o.couponCode||''})</span><span class="v" style="color:var(--success);">âˆ’ ${fmt(o.discount)}</span></div>` : ''}
+      ${o.discount ? `<div class="od-row"><span class="k">Discount (${o.couponCode||''})</span><span class="v" style="color:var(--success);">− ${fmt(o.discount)}</span></div>` : ''}
       <div class="od-row"><span class="k">Delivery Charge</span><span class="v">${fmt(o.deliveryCharge)}</span></div>
       <div class="od-row"><span class="k">Total (COD)</span><span class="v">${fmt(o.total)}</span></div>
     </div>
     <div class="od-section">
       <div class="od-label">Customer</div>
-      <div class="od-row"><span class="k">Name</span><span class="v">${escapeHtml(o.name||'â€”')}</span></div>
-      <div class="od-row"><span class="k">Phone</span><span class="v">${escapeHtml(o.phone||'â€”')}</span></div>
-      <div class="od-row"><span class="k">Email</span><span class="v">${escapeHtml(o.email||'â€”')}</span></div>
-      <div class="od-row"><span class="k">Address</span><span class="v">${escapeHtml(o.address||'â€”')}${o.area ? ', '+escapeHtml(o.area) : ''}</span></div>
-      <div class="od-row"><span class="k">City</span><span class="v">${escapeHtml(o.city||'â€”')}</span></div>
+      <div class="od-row"><span class="k">Name</span><span class="v">${escapeHtml(o.name||'—')}</span></div>
+      <div class="od-row"><span class="k">Phone</span><span class="v">${escapeHtml(o.phone||'—')}</span></div>
+      <div class="od-row"><span class="k">Email</span><span class="v">${escapeHtml(o.email||'—')}</span></div>
+      <div class="od-row"><span class="k">Address</span><span class="v">${escapeHtml(o.address||'—')}${o.area ? ', '+escapeHtml(o.area) : ''}</span></div>
+      <div class="od-row"><span class="k">City</span><span class="v">${escapeHtml(o.city||'—')}</span></div>
       ${o.notes ? `<div class="od-row"><span class="k">Notes</span><span class="v">${escapeHtml(o.notes)}</span></div>` : ''}
       ${(o.lat && o.lng) ? `
         <div class="od-map-wrap"><iframe class="od-map" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.openstreetmap.org/export/embed.html?bbox=${o.lng-0.006},${o.lat-0.006},${o.lng+0.006},${o.lat+0.006}&layer=mapnik&marker=${o.lat},${o.lng}"></iframe></div>
-        <a href="https://maps.google.com/?q=${o.lat},${o.lng}" target="_blank" class="od-map-link">Open in Google Maps â†—</a>
+        <a href="https://maps.google.com/?q=${o.lat},${o.lng}" target="_blank" class="od-map-link">Open in Google Maps ↗</a>
       ` : `<div class="od-row"><span class="k">Location</span><span class="v" style="color:#a09c92;">Not shared</span></div>`}
     </div>
   `;
@@ -1272,7 +1294,7 @@ function renderNewsletter(){
 document.getElementById('copyEmailsBtn').addEventListener('click', () => {
   const list = Array.isArray(subscribers) ? subscribers : [];
   if(list.length === 0){ showToast('No subscribers to copy'); return; }
-  navigator.clipboard.writeText(list.join(', ')).then(() => showToast('Emails copied to clipboard')).catch(() => showToast('Could not copy â€” please select manually'));
+  navigator.clipboard.writeText(list.join(', ')).then(() => showToast('Emails copied to clipboard')).catch(() => showToast('Could not copy — please select manually'));
 });
 
 /* =========================================================
@@ -1293,8 +1315,8 @@ function renderOverview(){
   tbody.innerHTML = recent.map(o => `
     <tr>
       <td style="font-weight:600;">#${o.orderId}</td>
-      <td>${escapeHtml(o.name||'â€”')}</td>
-      <td>${o.itemsDetailed ? o.itemsDetailed.reduce((a,i)=>a+i.qty,0) : 'â€”'}</td>
+      <td>${escapeHtml(o.name||'—')}</td>
+      <td>${o.itemsDetailed ? o.itemsDetailed.reduce((a,i)=>a+i.qty,0) : '—'}</td>
       <td style="font-weight:600;">${fmt(o.total)}</td>
       <td>${statusPill(o.status)}</td>
     </tr>
@@ -1319,10 +1341,10 @@ function showToast(msg){
 async function refreshAll(){
   renderProductsTable(); renderOrdersTable(); renderCouponsTable(); renderNewsletter(); renderOverview();
   try{ await loadCloudState(); }
-  catch(err){ console.error(err); showToast('Supabase connection failed â€” check your URL/key and RLS policies'); }
+  catch(err){ console.error(err); showToast('Supabase connection failed — check your URL/key and RLS policies'); }
 }
 
-/* Check login session LAST â€” only after every variable, function, and
+/* Check login session LAST — only after every variable, function, and
    event listener above is fully set up, to avoid a crash for already
    logged-in users on page refresh (products/orders/coupons referenced
    before their own declarations had run). */
